@@ -23,7 +23,7 @@ logging.basicConfig(format='%(levelname)s %(asctime)s: %(message)s', level=loggi
 ####################
 ### Define input ###
 ####################
-input_path = "fpscpcm/CORDEX-FPSCONV/output"
+input_path = "~/fpscpcm/CORDEX-FPSCONV/output"
 #workdir = "fpscpcm/tmp/rlorenz/data/work"
 
 domain = "ALP-3"
