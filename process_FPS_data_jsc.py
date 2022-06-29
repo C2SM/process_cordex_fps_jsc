@@ -76,14 +76,16 @@ institutes_gcm = ["AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
                   # "WEGC/IPSL-CM5-MR" #rcp only, 2090-2099 only
                   ]
 
-rcms = ["AUTH-MC-WRF381D", "BCCR-WRF381CF", "BCCR-WRF381DA", "CICERO-WRF381BJ",
-        "CLMcom-CMCC-CCLM5-0-9", "CLMCom-WEGC-CCLM5-0-09", "CLMcom-BTU-CCLM5-0-14",
-        "CLMcom-DWD-CCLM5-0-15", "CLMcom-JLU-CCLM5-0-15", "CLMcom-KIT-CCLM5-0-15",
-        "CNRM-AROME41t1", "COSMO-pompa", "FZJ-IBG3-WRF381CA",
-        "FZJ-IDL-WRF381DA", "GERICS-REMO2015", "HCLIMcom-HCLIM38-AROME",
-        "ICTP-RegCM4-7", "FZJ-IDL-WRF381DA", "IDL-WRF381CA", "IPSL-WRF381CE",
-        "IPSL-WEGC-WRF381DA", "HCLIM38h1-AROME", "HadREM3-RA-UM10.1",
-        "UCAN-WRF381BI", "UHOH-WRF381BD", "WEGC-WRF381DA"]
+rcms = ["AUTH-MC-WRF381D",
+        # "BCCR-WRF381CF", "BCCR-WRF381DA", "CICERO-WRF381BJ",
+        # "CLMcom-CMCC-CCLM5-0-9", "CLMCom-WEGC-CCLM5-0-09", "CLMcom-BTU-CCLM5-0-14",
+        # "CLMcom-DWD-CCLM5-0-15", "CLMcom-JLU-CCLM5-0-15", "CLMcom-KIT-CCLM5-0-15",
+        # "CNRM-AROME41t1", "COSMO-pompa", "FZJ-IBG3-WRF381CA",
+        # "FZJ-IDL-WRF381DA", "GERICS-REMO2015", "HCLIMcom-HCLIM38-AROME",
+        # "ICTP-RegCM4-7", "FZJ-IDL-WRF381DA", "IDL-WRF381CA", "IPSL-WRF381CE",
+        # "IPSL-WEGC-WRF381DA", "HCLIM38h1-AROME", "HadREM3-RA-UM10.1",
+        # "UCAN-WRF381BI", "UHOH-WRF381BD", "WEGC-WRF381DA"
+        ]
 
 def main():
     if (len(institutes_gcm) != len(rcms)):
