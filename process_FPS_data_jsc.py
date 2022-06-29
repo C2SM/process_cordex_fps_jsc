@@ -49,31 +49,31 @@ if (os.access(output_path, os.F_OK)==False):
 #    os.makedirs(workdir)
 
 institutes_gcm = ["AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
-                  "BCCR/NorESM1-ME", # BCCR-WRF381CF historical only
-                  "BCCR/NorESM1-ME", # BCCR-WRF381DA rcp 1 year only
-                  "CICERO/", # evaluation only
-                  "CLMCom-CMCC/ICHEC-EC-EARTH",
-                  "CLMCom-WEGC/MPI-M-MPI-ESM-LR", #2090-2099 only, filenames tot_prec_209???.nc, evaluation missing
-                  "CLMcom-BTU/CNRM-CERFACS-CNRM-CM5",
-                  "CLMcom-DWD/MOHC-HadGEM2-ES", # evaluation missing
-                  "CLMcom-JLU/MPI-M-MPI-ESM-LR",
-                  "CLMcom-KIT/MPI-M-MPI-ESM-LR",
-                  "CNRM/CNRM-CERFACS-CNRM-CM5",
-                  "ETHZ-2/MPI-M-MPI-ESM-LR", # evaluation contains concatenated file
-                  "FZJ-IBG3/SMHI-EC-EARTH", #historical only
-                  "FZJ-IDL/SMHI-EC-Earth", # 2090-2099 only, evaluation missing
-                  "GERICS/MPI-M-MPI-ESM-LR", # 2041-2050 only
-                  "HCLIMcom/ICHEC-EC-EARTH",
-                  "ICTP/MOHC-HadGEM2-ES",
-                  "IDL/SMHI-EC-Earth", #rcm: FZJ-IDL-WRF381DA, 2089-2099 only, historical missing
-                  "IDL/SMHI-EC-Earth", #rcm: IDL-WRF381CA, 2089-2099 only, historical missing
-                  "IPSL/IPSL-CM5A-MR", # 2041-2050 only
-                  "IPSL-WEGC/IPSL-CM5A-MR", #historical only
-                  "KNMI/KNMI-EC-EARTH", # r04i1p1 -> 2090-2099, r13i1p1 -> 2041-2015
-                  "MOHC/HadGEM3-GC3.1-N512",
-                  "UCAN/", # evaluation only, rcm: UCAN-WRF381BI
-                  "UHOH/",# evaluation only, rcm: UHOH-WRF381BD
-                  "WEGC/IPSL-CM5-MR" #rcp only, 2090-2099 only
+                  # "BCCR/NorESM1-ME", # BCCR-WRF381CF historical only
+                  # "BCCR/NorESM1-ME", # BCCR-WRF381DA rcp 1 year only
+                  # "CICERO/", # evaluation only
+                  # "CLMCom-CMCC/ICHEC-EC-EARTH",
+                  # "CLMCom-WEGC/MPI-M-MPI-ESM-LR", #2090-2099 only, filenames tot_prec_209???.nc, evaluation missing
+                  # "CLMcom-BTU/CNRM-CERFACS-CNRM-CM5",
+                  # "CLMcom-DWD/MOHC-HadGEM2-ES", # evaluation missing
+                  # "CLMcom-JLU/MPI-M-MPI-ESM-LR",
+                  # "CLMcom-KIT/MPI-M-MPI-ESM-LR",
+                  # "CNRM/CNRM-CERFACS-CNRM-CM5",
+                  # "ETHZ-2/MPI-M-MPI-ESM-LR", # evaluation contains concatenated file
+                  # "FZJ-IBG3/SMHI-EC-EARTH", #historical only
+                  # "FZJ-IDL/SMHI-EC-Earth", # 2090-2099 only, evaluation missing
+                  # "GERICS/MPI-M-MPI-ESM-LR", # 2041-2050 only
+                  # "HCLIMcom/ICHEC-EC-EARTH",
+                  # "ICTP/MOHC-HadGEM2-ES",
+                  # "IDL/SMHI-EC-Earth", #rcm: FZJ-IDL-WRF381DA, 2089-2099 only, historical missing
+                  # "IDL/SMHI-EC-Earth", #rcm: IDL-WRF381CA, 2089-2099 only, historical missing
+                  # "IPSL/IPSL-CM5A-MR", # 2041-2050 only
+                  # "IPSL-WEGC/IPSL-CM5A-MR", #historical only
+                  # "KNMI/KNMI-EC-EARTH", # r04i1p1 -> 2090-2099, r13i1p1 -> 2041-2015
+                  # "MOHC/HadGEM3-GC3.1-N512",
+                  # "UCAN/", # evaluation only, rcm: UCAN-WRF381BI
+                  # "UHOH/",# evaluation only, rcm: UHOH-WRF381BD
+                  # "WEGC/IPSL-CM5-MR" #rcp only, 2090-2099 only
                   ]
 
 rcms = ["AUTH-MC-WRF381D", "BCCR-WRF381CF", "BCCR-WRF381DA", "CICERO-WRF381BJ",
