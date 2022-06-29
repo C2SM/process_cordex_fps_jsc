@@ -89,7 +89,7 @@ rcms = ["AUTH-MC-WRF381D",
 
 def main():
     if (len(institutes_gcm) != len(rcms)):
-        logging.error(f'institutes_gcm and rcms lists do not have equal length, please check those lists!'')
+        logging.error(f'institutes_gcm and rcms lists do not have equal length, please check those lists!')
         os.exit()
 
     for v, varn in enumerate(variables):
@@ -109,7 +109,7 @@ def main():
                     # try different rcm names
                     file_path = "%s/%s/%s/%s/%s/r*/*/*/%s/%s/*.nc" %(input_path, domain, inst, gcm, scen, time_res[v], varn)
                     filelist = glob.glob(file_path)
-                    if filelist!=0:
+                    if len(filelist) != 0:
                         #extract rcm names
                         rcm_path=filelist[0].split('/')[8]
                         logging.warning(f'RCM name extracted from path is {rcm_path} which is not equal to {rcms[r]}')
