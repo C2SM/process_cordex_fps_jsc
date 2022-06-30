@@ -145,9 +145,9 @@ def main():
                     time_range = "%s-%s" %(firstdate_str, lastdate_str)
 
                     if 'rcm_path' in locals():
-                        filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcm_path, nesting, time_res, time_range)
+                        filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcm_path, nesting, time_res[v], time_range)
                     else:
-                        filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcms[r], nesting, time_res, time_range)
+                        filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcms[r], nesting, time_res[v], time_range)
                     logging.info('Filename is %s' %(filename))
                     ofile = "%s/%s.nc" %(output_path, filename)
 
