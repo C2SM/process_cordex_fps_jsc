@@ -89,7 +89,7 @@ rcms = ["AUTH-MC-WRF381D",
 
 def main():
     if (len(institutes_gcm) != len(rcms)):
-        logging.error(f'institutes_gcm and rcms lists do not have equal length, please check those lists!')
+        logging.error('institutes_gcm and rcms lists do not have equal length, please check those lists!')
         os.exit()
 
     for v, varn in enumerate(variables):
@@ -105,7 +105,7 @@ def main():
 
                 filelist = glob.glob(file_path)
                 if len(filelist) == 0:
-                    logging.warning(f'Filelist is empty, no files for path {file_path}')
+                    logging.warning('Filelist is empty, no files for path %s' %(file_path))
                     if scen == "evaluation":
                         # try different rcm names, WRF runs have different rcm name for evaluation runs
                         file_path = "%s/%s/%s/%s/%s/r*/*/*/%s/%s/*.nc" %(input_path, domain, inst, gcm, scen, time_res[v], varn)
@@ -113,15 +113,15 @@ def main():
                         if len(filelist) != 0:
                             #extract rcm names
                             rcm_path=filelist[0].split('/')[8]
-                            logging.warning(f'RCM name extracted from path is {rcm_path} which is not equal to {rcms[r]}')
-                            logging.info(f'{len(filelist)} files found, start processing:')
+                            logging.warning('RCM name extracted from path is %s which is not equal to %s' %(rcm_path, rcms[r]))
+                            logging.info('%s files found, start processing:' %(len(filelist)))
                         else:
-                            logging.warning(f'Filelist is still empty, no files for path {file_path}')
+                            logging.warning('Filelist is still empty, no files for path %s' %(file_path))
                             continue
                     else:
                         continue
                 else:
-                    logging.info(f'{len(filelist)} files found, start processing:')
+                    logging.info('%s files found, start processing:' %(len(filelist)))
 
                 for ifile in filelist:
                     split_ifile = ifile.split('/')
@@ -129,8 +129,9 @@ def main():
 
                     gcm_path = split_ifile[5]
                     if gcm_path != gcm:
-                        logging.error(f'GCM name given in input ({gcm}) is not'
-                            f'equal GCM name extracted from path {gcm_path}!')
+                        errormsg = 'GCM name given in input (%s) is not ' %(gcm) \
+                            'equal GCM name extracted from path %s!' %(gcm_path)
+                        logging.error(errormsg)
 
                     ensemble = split_ifile[7]
                     nesting = split_ifile[9]
@@ -146,7 +147,7 @@ def main():
                         filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcm_path, nesting, time_res, time_range)
                     else:
                         filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcms[r], nesting, time_res, time_range)
-                    logger.info(f'Filename is {filename}')
+                    logger.info('Filename is %s' %(filename))
                     ofile = "%s/%s.nc" %(output_path, filename)
 
                     cdo.sellonlatbox('%s,%s,%s,%s' %(lon1,lon2,lat1,lat2), input=ifile, output=ofile)
