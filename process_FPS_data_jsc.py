@@ -129,8 +129,9 @@ def main():
 
                     gcm_path = split_ifile[5]
                     if gcm_path != gcm:
-                        errormsg = 'GCM name given in input (%s) is not ' %(gcm) \
-                            'equal GCM name extracted from path %s!' %(gcm_path)
+                        errormsg = ('GCM name given in input (%s) is not equal'
+                                    'GCM name extracted from path %s!'
+                                    %(gcm, gcm_path))
                         logging.error(errormsg)
 
                     ensemble = split_ifile[7]
