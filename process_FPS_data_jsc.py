@@ -17,6 +17,7 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
 
 '''
 import os
+import os.path
 import logging
 import glob
 from cdo import *
