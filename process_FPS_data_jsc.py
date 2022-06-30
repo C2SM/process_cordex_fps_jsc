@@ -17,7 +17,6 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
 
 '''
 import os
-import os.path
 import logging
 import glob
 from cdo import *
@@ -195,7 +194,7 @@ def main():
 
                     # Check if ofile already exists, create if does not exist
                     # yet or overwrite=True
-                    if os.path.isFile(ofile) and overwrite==False:
+                    if os.path.isfile(ofile) and overwrite==False:
                         logging.info("File %s already exists." %ofile)
                     else:
                         cdo.sellonlatbox('%s,%s,%s,%s' %(lon1,lon2,lat1,lat2),
