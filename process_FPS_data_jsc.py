@@ -112,7 +112,7 @@ def main():
                         filelist = glob.glob(file_path)
                         if len(filelist) != 0:
                             #extract rcm names
-                            rcm_path=filelist[0].split('/')[8]
+                            rcm_path=filelist[0].split('/')[10]
                             logging.warning('RCM name extracted from path is %s which is not equal to %s' %(rcm_path, rcms[r]))
                             logging.info('%s files found, start processing:' %(len(filelist)))
                         else:
@@ -127,15 +127,15 @@ def main():
                     split_ifile = ifile.split('/')
                     fname = split_ifile[-1]
 
-                    gcm_path = split_ifile[5]
+                    gcm_path = split_ifile[7]
                     if gcm_path != gcm:
-                        errormsg = ('GCM name given in input (%s) is not equal'
+                        errormsg = ('GCM name given in input (%s) is not equal '
                                     'GCM name extracted from path %s!'
                                     %(gcm, gcm_path))
                         logging.error(errormsg)
 
-                    ensemble = split_ifile[7]
-                    nesting = split_ifile[9]
+                    ensemble = split_ifile[9]
+                    nesting = split_ifile[11]
 
                     dates = cdo.showdate(input=ifile)[0] # returns list with one string all dates
                     firstdate = dates.split(" ")[0]
