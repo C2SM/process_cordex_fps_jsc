@@ -23,7 +23,7 @@ logging.basicConfig(format='%(levelname)s %(asctime)s: %(message)s', level=loggi
 ####################
 ### Define input ###
 ####################
-input_path = "~/fpscpcm/CORDEX-FPSCONV/output"
+input_path = "/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output"
 #workdir = "fpscpcm/tmp/rlorenz/data/work"
 
 domain = "ALP-3"
@@ -39,7 +39,7 @@ lon2=16.3
 lat1=43.3
 lat2=48.5
 
-output_path = "fpscpcm/tmp/rlorenz/data/%s" %(subdomain)
+output_path = "/home/rlorenz/fpscpcm/tmp/rlorenz/data/%s" %(subdomain)
 
 # Create directories if needed
 if (os.access(output_path, os.F_OK)==False):
@@ -106,16 +106,19 @@ def main():
                 filelist = glob.glob(file_path)
                 if len(filelist) == 0:
                     logging.warning(f'Filelist is empty, no files for path {file_path}')
-                    # try different rcm names
-                    file_path = "%s/%s/%s/%s/%s/r*/*/*/%s/%s/*.nc" %(input_path, domain, inst, gcm, scen, time_res[v], varn)
-                    filelist = glob.glob(file_path)
-                    if len(filelist) != 0:
-                        #extract rcm names
-                        rcm_path=filelist[0].split('/')[8]
-                        logging.warning(f'RCM name extracted from path is {rcm_path} which is not equal to {rcms[r]}')
-                        logging.info(f'{len(filelist)} files found, start processing:')
+                    if scen == "evaluation":
+                        # try different rcm names, WRF runs have different rcm name for evaluation runs
+                        file_path = "%s/%s/%s/%s/%s/r*/*/*/%s/%s/*.nc" %(input_path, domain, inst, gcm, scen, time_res[v], varn)
+                        filelist = glob.glob(file_path)
+                        if len(filelist) != 0:
+                            #extract rcm names
+                            rcm_path=filelist[0].split('/')[8]
+                            logging.warning(f'RCM name extracted from path is {rcm_path} which is not equal to {rcms[r]}')
+                            logging.info(f'{len(filelist)} files found, start processing:')
+                        else:
+                            logging.warning(f'Filelist is still empty, no files for path {file_path}')
+                            continue
                     else:
-                        logging.warning(f'Filelist is still empty, no files for path {file_path}')
                         continue
                 else:
                     logging.info(f'{len(filelist)} files found, start processing:')
