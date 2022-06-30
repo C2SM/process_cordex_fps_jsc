@@ -31,11 +31,11 @@ logging.basicConfig(format='%(levelname)s %(asctime)s: %(message)s',
 input_path = "/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output"
 
 domain = "ALP-3"
-time_res = ["1hr", "1hr"]
-#time_res = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
-variables = ["tas", "pr"]
-#variables = ["tas", "pr", "psl", "zg500", "zg850", "hus850",
-#             "tasmax", "tasmin", "snd", "orog"]
+#time_res = ["1hr", "1hr"]
+time_res = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
+#variables = ["tas", "pr"]
+variables = ["tas", "pr", "psl", "zg500", "zg850", "hus850",
+             "tasmax", "tasmin", "snd", "orog"]
 
 scenarios = ["historical", "rcp85", "evaluation"]
 
