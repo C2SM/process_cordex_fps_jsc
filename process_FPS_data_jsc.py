@@ -196,7 +196,7 @@ def main():
                     # yet or overwrite=True
                     if os.path.isFile(ofile) and overwrite==False:
                         logging.info("File %s already exists." %ofile)
-                    else
+                    else:
                         cdo.sellonlatbox('%s,%s,%s,%s' %(lon1,lon2,lat1,lat2),
                                          input=ifile, output=ofile)
 
