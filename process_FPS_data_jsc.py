@@ -148,7 +148,7 @@ def main():
                         filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcm_path, nesting, time_res, time_range)
                     else:
                         filename = "%s_%s_%s_%s_%s_%s_%s_%s_%s" %(varn, subdomain, gcm, scen, ensemble, rcms[r], nesting, time_res, time_range)
-                    logger.info('Filename is %s' %(filename))
+                    logging.info('Filename is %s' %(filename))
                     ofile = "%s/%s.nc" %(output_path, filename)
 
                     cdo.sellonlatbox('%s,%s,%s,%s' %(lon1,lon2,lat1,lat2), input=ifile, output=ofile)
