@@ -127,15 +127,15 @@ def main():
                     split_ifile = ifile.split('/')
                     fname = split_ifile[-1]
 
-                    gcm_path = split_ifile[7]
+                    gcm_path = split_ifile[8]
                     if gcm_path != gcm:
                         errormsg = ('GCM name given in input (%s) is not equal '
                                     'GCM name extracted from path %s!'
                                     %(gcm, gcm_path))
                         logging.error(errormsg)
 
-                    ensemble = split_ifile[9]
-                    nesting = split_ifile[11]
+                    ensemble = split_ifile[10]
+                    nesting = split_ifile[12]
 
                     dates = cdo.showdate(input=ifile)[0] # returns list with one string all dates
                     firstdate = dates.split(" ")[0]
