@@ -16,13 +16,22 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
  * cut domain to allAlps region
 
 '''
+import time
 import os
 import logging
 import glob
 from cdo import *
 cdo = Cdo()
 
-logging.basicConfig(format='%(levelname)s %(asctime)s: %(message)s',
+# Define logfile and logger
+seconds = time.time()
+local_time = time.localtime(seconds)
+LOG_FILENAME = 'logfiles/logging_%s%s%s%s%s.out' %(
+    local_time.tm_year, local_time.tm_mon, local_time.tm_hour,
+    local_time.tm_min, local_time.tm_sec)
+logging.basicConfig(filename=LOG_FILENAME,
+                    filemode='w',
+                    format='%(levelname)s %(asctime)s: %(message)s',
                     level=logging.INFO)
 
 ####################
