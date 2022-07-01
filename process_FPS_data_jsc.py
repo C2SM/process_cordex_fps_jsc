@@ -9,9 +9,11 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
          to copy to CSCS
  steps:
  * process variables:
+ Some of the variables might exist in different frequency
     - 1hr: pr, tas
-    - 6hr: psl, zg500, zg850, hus850
-    - day: tasmax, tasmin, snd (snd frequency depends on model!)
+    - 3hr: hus850
+    - 6hr: psl, zg500, zg850
+    - day: tasmax, tasmin, snd
     - fx: orog
  * cut domain to allAlps region
 
@@ -41,9 +43,9 @@ input_path = "/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output"
 
 domain = "ALP-3"
 #time_res = ["1hr", "1hr"]
-time_res = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
+time_res = ["1hr", "1hr", "3hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
 #variables = ["tas", "pr"]
-variables = ["tas", "pr", "psl", "zg500", "zg850", "hus850",
+variables = ["tas", "pr", "hus850", "psl", "zg500", "zg850",
              "tasmax", "tasmin", "snd", "orog"]
 
 scenarios = ["historical", "rcp85", "evaluation"]
@@ -62,16 +64,16 @@ if (os.access(output_path, os.F_OK)==False):
     os.makedirs(output_path)
 
 # institutes_gcm list is what I found on jsc-cordex (June 2022)
-institutes_gcm = ["AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
+institutes_gcm = [#"AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
                   # "BCCR/NorESM1-ME", # BCCR-WRF381CF historical only
                   # "BCCR/NorESM1-ME", # BCCR-WRF381DA rcp 1 year only
                   # "CICERO/", # evaluation only
-                   "CLMCom-CMCC/ICHEC-EC-EARTH",
+                  # "CLMCom-CMCC/ICHEC-EC-EARTH",
                   # "CLMCom-WEGC/MPI-M-MPI-ESM-LR", #2090-2099 only, filenames tot_prec_209???.nc, evaluation missing
                   # "CLMcom-BTU/CNRM-CERFACS-CNRM-CM5",
                   # "CLMcom-DWD/MOHC-HadGEM2-ES", # evaluation missing
                   # "CLMcom-JLU/MPI-M-MPI-ESM-LR",
-                  # "CLMcom-KIT/MPI-M-MPI-ESM-LR",
+                   "CLMcom-KIT/MPI-M-MPI-ESM-LR",
                   # "CNRM/CNRM-CERFACS-CNRM-CM5",
                   # "ETHZ-2/MPI-M-MPI-ESM-LR", # evaluation contains concatenated file
                   # "FZJ-IBG3/SMHI-EC-EARTH", #historical only
@@ -91,11 +93,12 @@ institutes_gcm = ["AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
                   ]
 
 # rcms list contains RCM names as found on jsc-cordex in rcp85 folder
-rcms = ["AUTH-MC-WRF381D",
+rcms = [#"AUTH-MC-WRF381D",
         # "BCCR-WRF381CF", "BCCR-WRF381DA", "CICERO-WRF381BJ",
-         "CLMcom-CMCC-CCLM5-0-9",
+        # "CLMcom-CMCC-CCLM5-0-9",
         #"CLMCom-WEGC-CCLM5-0-09", "CLMcom-BTU-CCLM5-0-14",
-        # "CLMcom-DWD-CCLM5-0-15", "CLMcom-JLU-CCLM5-0-15", "CLMcom-KIT-CCLM5-0-15",
+        # "CLMcom-DWD-CCLM5-0-15", "CLMcom-JLU-CCLM5-0-15",
+        "CLMcom-KIT-CCLM5-0-15",
         # "CNRM-AROME41t1", "COSMO-pompa", "FZJ-IBG3-WRF381CA",
         # "FZJ-IDL-WRF381DA", "GERICS-REMO2015", "HCLIMcom-HCLIM38-AROME",
         # "ICTP-RegCM4-7", "FZJ-IDL-WRF381DA", "IDL-WRF381CA", "IPSL-WRF381CE",
