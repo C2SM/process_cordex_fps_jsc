@@ -45,7 +45,7 @@ lon2=16.3
 lat1=43.3
 lat2=48.5
 
-overwrite = True # Flag to trigger overwriting of Files
+overwrite = False # Flag to trigger overwriting of Files
 output_path = "/home/rlorenz/fpscpcm/tmp/rlorenz/data/%s" %(subdomain)
 
 # Create directories if needed
@@ -57,7 +57,7 @@ institutes_gcm = ["AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
                   # "BCCR/NorESM1-ME", # BCCR-WRF381CF historical only
                   # "BCCR/NorESM1-ME", # BCCR-WRF381DA rcp 1 year only
                   # "CICERO/", # evaluation only
-                  # "CLMCom-CMCC/ICHEC-EC-EARTH",
+                   "CLMCom-CMCC/ICHEC-EC-EARTH",
                   # "CLMCom-WEGC/MPI-M-MPI-ESM-LR", #2090-2099 only, filenames tot_prec_209???.nc, evaluation missing
                   # "CLMcom-BTU/CNRM-CERFACS-CNRM-CM5",
                   # "CLMcom-DWD/MOHC-HadGEM2-ES", # evaluation missing
@@ -84,7 +84,8 @@ institutes_gcm = ["AUTH-MC/NorESM1-ME", # rcp only, 2090-2099 only
 # rcms list contains RCM names as found on jsc-cordex in rcp85 folder
 rcms = ["AUTH-MC-WRF381D",
         # "BCCR-WRF381CF", "BCCR-WRF381DA", "CICERO-WRF381BJ",
-        # "CLMcom-CMCC-CCLM5-0-9", "CLMCom-WEGC-CCLM5-0-09", "CLMcom-BTU-CCLM5-0-14",
+         "CLMcom-CMCC-CCLM5-0-9",
+        #"CLMCom-WEGC-CCLM5-0-09", "CLMcom-BTU-CCLM5-0-14",
         # "CLMcom-DWD-CCLM5-0-15", "CLMcom-JLU-CCLM5-0-15", "CLMcom-KIT-CCLM5-0-15",
         # "CNRM-AROME41t1", "COSMO-pompa", "FZJ-IBG3-WRF381CA",
         # "FZJ-IDL-WRF381DA", "GERICS-REMO2015", "HCLIMcom-HCLIM38-AROME",
