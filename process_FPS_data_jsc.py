@@ -134,7 +134,9 @@ def main():
                             logging.warning(infomsg)
                             # Variables can be in different frequencies than the
                             # required ones, check other folders
-                            for new_time_res in tres_valid:
+                            tres_valid_rm = [n for n in tres_valid if n != time_res[v]]
+                            logger.info(tres_valid_rm)
+                            for new_time_res in tres_valid_rm:
                                 check_path = ("%s/%s/%s/%s/%s/r*/%s/*/%s/%s/*.nc"
                                     %(input_path, domain, inst, gcm, scen, rcm,
                                       new_time_res, varn))
