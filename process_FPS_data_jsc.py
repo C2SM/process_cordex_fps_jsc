@@ -81,8 +81,7 @@ def get_folders(path):
     res=[]
     for folder in os.listdir(path):
         if os.path.isdir(os.path.join(path, folder)):
-            yield folder
-        res.append(folder)
+            res.append(folder)
     logging.debug(res)
     return res
 
