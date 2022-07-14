@@ -91,13 +91,15 @@ def main():
     resample if necessary
     """
     if len(TIME_RES) != len(VARIABLES):
-        errormsg = ('Lists TIME_RES and variables do not have equal length, '
+        errormsg = ('Lists TIME_RES and VARIABLES do not have equal length, '
                     'please check those lists!')
         logging.error(errormsg)
         os.exit()
 
     # Find all institutes, models etc.
     institutes = get_folders(f"{INPUT_PATH}/{DOMAIN}/")
+    print(institutes)
+    logging.info('Institute folders found are: %s', institutes)
     # remove ETHz from list because we only need ETHZ-2
     institutes.remove("ETHZ")
     logging.info('Institute folders found are: %s', institutes)
