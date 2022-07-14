@@ -30,9 +30,8 @@ import time_functions as tf
 # Define logfile and logger
 seconds = time.time()
 local_time = time.localtime(seconds)
-LOG_FILENAME = 'logfiles/logging_%s%s%s%s%s.out' %(
-    local_time.tm_year, local_time.tm_mon, local_time.tm_hour,
-    local_time.tm_min, local_time.tm_sec)
+LOG_FILENAME = (f"logfiles/logging_{local_time.tm_year}{local_time.tm_mon}"
+                f"{local_time.tm_hour}{local_time.tm_min}{local_time.tm_sec}.out")
 logging.basicConfig(filename=LOG_FILENAME,
                     filemode='w',
                     format='%(levelname)s %(asctime)s: %(message)s',
@@ -62,7 +61,7 @@ LAT1=43.3
 LAT2=48.5
 
 OVERWRITE = False # Flag to trigger overwriting of Files
-OUTPUT_PATH = "/home/rlorenz/fpscpcm/tmp/rlorenz/data/%s" %(SUBDOMAIN)
+OUTPUT_PATH = f"/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}"
 WORKDIR = "/home/rlorenz/fpscpcm/tmp/rlorenz/data/work"
 
 # Create directories if needed
@@ -98,7 +97,7 @@ def main():
         os.exit()
 
     # Find all institutes, models etc.
-    institutes = get_folders("%s/%s/" %(INPUT_PATH, DOMAIN))
+    institutes = get_folders(f"{INPUT_PATH}/{DOMAIN}/")
     # remove ETHz from list because we only need ETHZ-2
     institutes.remove("ETHZ")
     logging.info('Institute folders found are: %s', institutes)
@@ -109,7 +108,7 @@ def main():
             if scen == "evaluation":
                 gcm = "ECMWF-ERAINT"
             else:
-                gcms = get_folders("%s/%s/%s/" %(INPUT_PATH, DOMAIN, inst))
+                gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
                 try:
                     gcms.remove("ECMWF-ERAINT")
                 except ValueError:
@@ -127,14 +126,12 @@ def main():
                     continue
 
                 # find rcm names
-                rcms = glob.glob("%s/%s/%s/%s/%s/r*/" %(
-                    INPUT_PATH, DOMAIN, inst, gcm, scen))
+                rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
                 # loop over rcms
                 for rcm in rcms:
                     for v, varn in enumerate(VARIABLES):
-                        file_path = ("%s/%s/%s/%s/%s/r*/%s/*/%s/%s/*.nc"
-                            %(INPUT_PATH, DOMAIN, inst, gcm, scen, rcm,
-                              TIME_RES[v], varn))
+                        file_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}"
+                                     f"/r*/{rcm}/*/{TIME_RES[v]}/{varn}/*.nc")
                         derived = False
                         # Find all files matching pattern file_path
                         filelist = glob.glob(file_path)
@@ -148,9 +145,9 @@ def main():
                             tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v]]
                             logging.info(tres_valid_rm)
                             for new_time_res in tres_valid_rm:
-                                check_path = ("%s/%s/%s/%s/%s/r*/%s/*/%s/%s/*.nc"
-                                    %(INPUT_PATH, DOMAIN, inst, gcm, scen, rcm,
-                                      new_time_res, varn))
+                                check_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/"
+                                              f"{scen}/r*/{rcm}/*/{new_time_res}/"
+                                              f"{varn}/*.nc")
                                 filelist = glob.glob(check_path)
                                 if len(filelist) != 0:
                                     infomsg=('Variable %s found in frequency %s',
@@ -179,23 +176,23 @@ def main():
                             firstdate_str = "".join(firstdate.split("-"))
                             lastdate = dates.split(" ")[-1]
                             lastdate_str = "".join(lastdate.split("-"))
-                            time_range = "%s-%s" %(firstdate_str, lastdate_str)
+                            time_range = f"{firstdate_str}-{lastdate_str}"
 
-                            filename = ("%s_%s_%s_%s_%s_%s_%s_%s_%s"
-                                        %(varn, SUBDOMAIN, gcm, scen, ensemble,
-                                          rcm, nesting, TIME_RES[v], time_range))
+                            filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
+                                        f"{ensemble}_{rcm}_{nesting}_"
+                                        f"{TIME_RES[v]}_{time_range}")
                             if derived:
                                 if TIME_RES[v] == '1h' and new_time_res in ['3h', '6h', 'day']:
                                     # we do not upsample, native time frequency will be processed
-                                    filename = ("%s_%s_%s_%s_%s_%s_%s_%s_%s"
-                                                %(varn, SUBDOMAIN, gcm, scen, ensemble,
-                                                  rcm, nesting, new_time_res, time_range))
-                                tmp_file = ("%s/%s_%s_%s_%s_%s_%s_%s_%s_%s.nc"
-                                            %(WORKDIR, varn, SUBDOMAIN, gcm, scen, ensemble,
-                                              rcm, nesting, new_time_res, time_range))
+                                    filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
+                                                f"{ensemble}_{rcm}_{nesting}_"
+                                                f"{new_time_res}_{time_range}")
+                                tmp_file = (f"{WORKDIR}/{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
+                                            f"{ensemble}_{rcm}_{nesting}_"
+                                            f"{new_time_res}_{time_range}.nc")
 
                             logging.info('Filename is %s', filename)
-                            ofile = "%s/%s.nc" %(OUTPUT_PATH, filename)
+                            ofile = f"{OUTPUT_PATH}/{filename}.nc"
 
                             # Check if ofile already exists, create if does not exist
                             # yet or OVERWRITE=True
@@ -203,7 +200,7 @@ def main():
                                 logging.info("File %s already exists.", ofile)
                             else:
                                 if derived:
-                                    cdo.sellonlatbox('%s,%s,%s,%s' %(LON1,LON2,LAT1,LAT2),
+                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                      input=ifile, output=tmp_file)
                                     # Variable needs to be DERIVED for the required time frequency
                                     if TIME_RES[v] == '6h' and new_time_res == '1h':
@@ -215,11 +212,11 @@ def main():
                                         ['3h', '6h', 'day']) or
                                         (TIME_RES[v] == '6h' and new_time_res == 'day')):
                                         # process native frequency, cannot increase frequency
-                                        cdo.sellonlatbox('%s,%s,%s,%s' %(LON1,LON2,LAT1,LAT2),
+                                        cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                          input=ifile, output=ofile)
                                 else:
                                     # All we need to do is cut the SUBDOMAIN
-                                    cdo.sellonlatbox('%s,%s,%s,%s' %(LON1,LON2,LAT1,LAT2),
+                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                      input=ifile, output=ofile)
 
 
