@@ -118,15 +118,15 @@ def main():
 #                    infomsg = ('No ECMWF-ERAINT folder to remove from list.')
 #                    logging.info(infomsg)
                 # check if one gcm name found:
-                if len(gcms) >= 1:
-                    errormsg = ('More than one gcm folder found! %s', gcms)
-                    logging.error(errormsg)
-                elif len(gcms) == 1:
-                    gcm = gcms[0]
-                    logging.info('One gcm folder found: %s', gcm)
-                else:
-                    logging.warning('No gcm folder found, continuing')
-                    continue
+                # if len(gcms) >= 1:
+                #     errormsg = ('More than one gcm folder found! %s', gcms)
+                #     logging.error(errormsg)
+                # elif len(gcms) == 1:
+                #     gcm = gcms[0]
+                #     logging.info('One gcm folder found: %s', gcm)
+                # else:
+                #     logging.warning('No gcm folder found, continuing')
+                #     continue
 
                 # find rcm names
                 rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
