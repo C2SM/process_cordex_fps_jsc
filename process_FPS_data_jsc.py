@@ -127,7 +127,7 @@ def main():
                 # else:
                 #     logging.warning('No gcm folder found, continuing')
                 #     continue
-
+                gcm=gcms
                 # find rcm names
                 rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
                 # loop over rcms
