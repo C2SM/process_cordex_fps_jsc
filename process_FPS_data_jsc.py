@@ -158,7 +158,12 @@ def main():
                 gcm = gcms[0]
 
                 # find ensemble
-                ensembles = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}")
+                try:
+                    ensembles = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}")
+                except FileNotFoundError:
+                    warnmsg = ('No folder found for %s', scen)
+                    logging.warning(warnmsg)
+                    continue
                 remove_item_from_list(ensembles, "r0i0p0")
                 ensemble = ensembles[0]
                 # find rcm names
