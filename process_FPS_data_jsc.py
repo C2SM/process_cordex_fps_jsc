@@ -187,6 +187,7 @@ def main():
                             # required ones, check other folders
                             tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v_ind]]
                             logging.info(tres_valid_rm)
+                            new_time_res = None
                             for new_time_res in tres_valid_rm:
                                 check_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/"
                                               f"{scen}/{ensemble}/{rcm}/*/{new_time_res}/"
@@ -242,20 +243,24 @@ def main():
                                 logging.info("File %s already exists.", ofile)
                             else:
                                 if derived:
-                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
-                                                     input=ifile, output=tmp_file)
-                                    # Variable needs to be DERIVED for the required time frequency
-                                    if TIME_RES[v_ind] == '6h' and new_time_res == '1h':
-                                        tf.calc_1h_to_6h(varn, tmp_file, ofile)
-                                    if TIME_RES[v_ind] == 'day':
-                                        tf.calc_to_day(varn, tmp_file, ofile)
-
                                     if ((TIME_RES[v_ind] == '1h' and new_time_res in
                                         ['3h', '6h', 'day']) or
                                         (TIME_RES[v_ind] == '6h' and new_time_res == 'day')):
                                         # process native frequency, cannot increase frequency
                                         cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                          input=ifile, output=ofile)
+                                    else:
+                                        cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
+                                                         input=ifile, output=tmp_file)
+                                        # Variable needs to be derived for the required time frequency
+                                        if TIME_RES[v_ind] == 'day':
+                                            tf.calc_to_day(varn, tmp_file, ofile)
+                                        elif TIME_RES[v_ind] == '6h' and new_time_res == '1h':
+                                            tf.calc_1h_to_6h(varn, tmp_file, ofile)
+                                        elif TIME_RES[v_ind] == '3h' and new_time_res == '1h':
+                                            tf.calc_1h_to_3h(varn, tmp_file, ofile)
+                                        else:
+                                            logging.error('Not implemented error!')
                                 else:
                                     # All we need to do is cut the SUBDOMAIN
                                     cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
