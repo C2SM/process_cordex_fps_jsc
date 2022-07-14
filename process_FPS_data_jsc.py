@@ -110,12 +110,12 @@ def main():
             else:
                 gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
                 logging.info('gcms list is %s', gcms)
-               try:
-                   gcms.remove("ECMWF-ERAINT")
-               except ValueError:
-                   infomsg = ('No ECMWF-ERAINT folder to remove from list.')
-                   logging.info(infomsg)
-                check if one gcm name found:
+                try:
+                    gcms.remove("ECMWF-ERAINT")
+                except ValueError:
+                    infomsg = ('No ECMWF-ERAINT folder to remove from list.')
+                    logging.info(infomsg)
+                # check if one gcm name found:
                 if len(gcms) >= 1:
                     errormsg = ('More than one gcm folder found! %s', gcms)
                     logging.error(errormsg)
@@ -130,9 +130,9 @@ def main():
                 rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
                 # loop over rcms
                 for rcm in rcms:
-                    for v, varn in enumerate(VARIABLES):
+                    for v_ind, varn in enumerate(VARIABLES):
                         file_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}"
-                                     f"/r*/{rcm}/*/{TIME_RES[v]}/{varn}/*.nc")
+                                     f"/r*/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc")
                         derived = False
                         # Find all files matching pattern file_path
                         filelist = glob.glob(file_path)
@@ -143,7 +143,7 @@ def main():
                             logging.warning(warnmsg)
                             # Variables can be in different frequencies than the
                             # required ones, check other folders
-                            tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v]]
+                            tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v_ind]]
                             logging.info(tres_valid_rm)
                             for new_time_res in tres_valid_rm:
                                 check_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/"
@@ -181,9 +181,9 @@ def main():
 
                             filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
                                         f"{ensemble}_{rcm}_{nesting}_"
-                                        f"{TIME_RES[v]}_{time_range}")
+                                        f"{TIME_RES[v_ind]}_{time_range}")
                             if derived:
-                                if TIME_RES[v] == '1h' and new_time_res in ['3h', '6h', 'day']:
+                                if TIME_RES[v_ind] == '1h' and new_time_res in ['3h', '6h', 'day']:
                                     # we do not upsample, native time frequency will be processed
                                     filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
                                                 f"{ensemble}_{rcm}_{nesting}_"
@@ -204,14 +204,14 @@ def main():
                                     cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                      input=ifile, output=tmp_file)
                                     # Variable needs to be DERIVED for the required time frequency
-                                    if TIME_RES[v] == '6h' and new_time_res == '1h':
+                                    if TIME_RES[v_ind] == '6h' and new_time_res == '1h':
                                         tf.calc_1h_to_6h(varn, tmp_file, ofile)
-                                    if TIME_RES[v] == 'day':
+                                    if TIME_RES[v_ind] == 'day':
                                         tf.calc_to_day(varn, tmp_file, ofile)
 
-                                    if ((TIME_RES[v] == '1h' and new_time_res in
+                                    if ((TIME_RES[v_ind] == '1h' and new_time_res in
                                         ['3h', '6h', 'day']) or
-                                        (TIME_RES[v] == '6h' and new_time_res == 'day')):
+                                        (TIME_RES[v_ind] == '6h' and new_time_res == 'day')):
                                         # process native frequency, cannot increase frequency
                                         cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                          input=ifile, output=ofile)
