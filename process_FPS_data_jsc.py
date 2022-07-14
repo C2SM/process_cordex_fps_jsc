@@ -112,11 +112,11 @@ def main():
             else:
                 gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
                 logging.info('gcms list is %s', gcms)
-                try:
-                    gcms.remove("ECMWF-ERAINT")
-                except ValueError:
-                    infomsg = ('No ECMWF-ERAINT folder to remove from list.')
-                    logging.info(infomsg)
+#                try:
+#                    gcms.remove("ECMWF-ERAINT")
+#                except ValueError:
+#                    infomsg = ('No ECMWF-ERAINT folder to remove from list.')
+#                    logging.info(infomsg)
                 # check if one gcm name found:
                 if len(gcms) >= 1:
                     errormsg = ('More than one gcm folder found! %s', gcms)
