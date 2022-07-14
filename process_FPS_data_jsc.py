@@ -82,7 +82,7 @@ def get_folders(path):
     for folder in os.listdir(path):
         if os.path.isdir(os.path.join(path, folder)):
             res.append(folder)
-    logging.debug(res)
+
     return res
 
 def main():
@@ -98,9 +98,8 @@ def main():
 
     # Find all institutes, models etc.
     institutes = get_folders(f"{INPUT_PATH}/{DOMAIN}/")
-    print(institutes)
     # remove ETHz from list because we only need ETHZ-2
-    #institutes.remove("ETHZ")
+    institutes.remove("ETHZ")
     logging.info('Institute folders found are: %s', institutes)
 
     for inst in institutes:
@@ -111,22 +110,22 @@ def main():
             else:
                 gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
                 logging.info('gcms list is %s', gcms)
-#                try:
-#                    gcms.remove("ECMWF-ERAINT")
-#                except ValueError:
-#                    infomsg = ('No ECMWF-ERAINT folder to remove from list.')
-#                    logging.info(infomsg)
-                # check if one gcm name found:
-                # if len(gcms) >= 1:
-                #     errormsg = ('More than one gcm folder found! %s', gcms)
-                #     logging.error(errormsg)
-                # elif len(gcms) == 1:
-                #     gcm = gcms[0]
-                #     logging.info('One gcm folder found: %s', gcm)
-                # else:
-                #     logging.warning('No gcm folder found, continuing')
-                #     continue
-                gcm=gcms
+               try:
+                   gcms.remove("ECMWF-ERAINT")
+               except ValueError:
+                   infomsg = ('No ECMWF-ERAINT folder to remove from list.')
+                   logging.info(infomsg)
+                check if one gcm name found:
+                if len(gcms) >= 1:
+                    errormsg = ('More than one gcm folder found! %s', gcms)
+                    logging.error(errormsg)
+                elif len(gcms) == 1:
+                    gcm = gcms[0]
+                    logging.info('One gcm folder found: %s', gcm)
+                else:
+                    logging.warning('No gcm folder found, continuing')
+                    continue
+
                 # find rcm names
                 rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
                 # loop over rcms
