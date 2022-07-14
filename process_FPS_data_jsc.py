@@ -54,42 +54,75 @@ TIME_RES = ["1hr"]
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ["1hr", "3hr", "6hr", "day"]
 
-SUBDOMAIN="allAlps"
-LON1=5.3
-LON2=16.3
-LAT1=43.3
-LAT2=48.5
+SUBDOMAIN = "allAlps"
+LON1 = 5.3
+LON2 = 16.3
+LAT1 = 43.3
+LAT2 = 48.5
 
 OVERWRITE = False # Flag to trigger overwriting of Files
 OUTPUT_PATH = f"/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}"
 WORKDIR = "/home/rlorenz/fpscpcm/tmp/rlorenz/data/work"
 
-# Create directories if needed
-if not os.access(OUTPUT_PATH, os.F_OK):
-    os.makedirs(OUTPUT_PATH)
-if not os.access(WORKDIR, os.F_OK):
-    os.makedirs(WORKDIR)
-
 
 def get_folders(path):
     """
-    Function to get all folder names in path
+    Get all folder names in path
 
-    input: path
-    returns: list with all folder names
+    Parameters
+    ----------
+    path: string
+        path to look for folder names
+
+    Returns
+    -------
+    res: list
+        list with all folder names
     """
-    res=[]
+    res = []
     for folder in os.listdir(path):
         if os.path.isdir(os.path.join(path, folder)):
             res.append(folder)
 
     return res
 
+def remove_item_from_list(orig_list, item):
+    """
+    Remove a known item from a list
+
+    Parameters
+    ----------
+    orig_list: list
+        original list
+    item: string
+        item to be removed
+
+    Returns
+    -------
+    orig_list: list
+        list without item
+    """
+    try:
+        orig_list.remove(item)
+    except ValueError:
+        infomsg = ('No %s folder to remove from list.', item)
+        logging.info(infomsg)
+
+    return orig_list
+
 def main():
     """
     Loop over all files found and cut to smaller domain,
     resample if necessary
     """
+
+    # Create directories if needed
+    if not os.access(OUTPUT_PATH, os.F_OK):
+        os.makedirs(OUTPUT_PATH)
+    if not os.access(WORKDIR, os.F_OK):
+        os.makedirs(WORKDIR)
+
+
     if len(TIME_RES) != len(VARIABLES):
         errormsg = ('Lists TIME_RES and VARIABLES do not have equal length, '
                     'please check those lists!')
@@ -110,28 +143,33 @@ def main():
             else:
                 gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
                 logging.info('gcms list is %s', gcms)
-                try:
-                    gcms.remove("ECMWF-ERAINT")
-                except ValueError:
-                    infomsg = ('No ECMWF-ERAINT folder to remove from list.')
-                    logging.info(infomsg)
+                remove_item_from_list(gcms, "ECMWF-ERAINT")
+
                 # check if one gcm name found:
-                if len(gcms) >= 1:
+                if len(gcms) > 1:
                     errormsg = ('More than one gcm folder found! %s', gcms)
                     logging.error(errormsg)
-                elif len(gcms) == 1:
+                    exit()
+                if len(gcms) == 1:
                     logging.info('One gcm folder found: %s', gcms[0])
                 else:
                     logging.warning('No gcm folder found, continuing')
                     continue
                 gcm = gcms[0]
+
+                # find ensemble
+                ensembles = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}")
+                remove_item_from_list(ensembles, "r0i0p0")
+                ensemble = ensembles[0]
                 # find rcm names
-                rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
+                rcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/{ensemble}")
+
                 # loop over rcms
                 for rcm in rcms:
+                    logging.info('RCM is %s', rcm)
                     for v_ind, varn in enumerate(VARIABLES):
                         file_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}"
-                                     f"/r*/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc")
+                                     f"/{ensemble}/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc")
                         derived = False
                         # Find all files matching pattern file_path
                         filelist = glob.glob(file_path)
@@ -146,7 +184,7 @@ def main():
                             logging.info(tres_valid_rm)
                             for new_time_res in tres_valid_rm:
                                 check_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/"
-                                              f"{scen}/r*/{rcm}/*/{new_time_res}/"
+                                              f"{scen}/{ensemble}/{rcm}/*/{new_time_res}/"
                                               f"{varn}/*.nc")
                                 filelist = glob.glob(check_path)
                                 if len(filelist) != 0:
@@ -165,8 +203,7 @@ def main():
                         for ifile in filelist:
                             split_ifile = ifile.split('/')
 
-                            # find ensemble and nesting info from path for output filename
-                            ensemble = split_ifile[10]
+                            # find nesting info from path for output filename
                             nesting = split_ifile[12]
 
                             # find time range included in file for output filename
