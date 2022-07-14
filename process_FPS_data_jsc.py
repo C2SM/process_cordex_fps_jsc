@@ -120,12 +120,11 @@ def main():
                     errormsg = ('More than one gcm folder found! %s', gcms)
                     logging.error(errormsg)
                 elif len(gcms) == 1:
-                    gcm = gcms[0]
-                    logging.info('One gcm folder found: %s', gcm)
+                    logging.info('One gcm folder found: %s', gcms[0])
                 else:
                     logging.warning('No gcm folder found, continuing')
                     continue
-
+                gcm = gcms[0]
                 # find rcm names
                 rcms = glob.glob(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/r*/")
                 # loop over rcms
