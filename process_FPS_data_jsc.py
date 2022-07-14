@@ -83,6 +83,7 @@ def get_folders(path):
         if os.path.isdir(os.path.join(path, folder)):
             yield folder
         res.append(folder)
+    logging.debug(res)
     return res
 
 def main():
@@ -99,9 +100,8 @@ def main():
     # Find all institutes, models etc.
     institutes = get_folders(f"{INPUT_PATH}/{DOMAIN}/")
     print(institutes)
-    logging.info('Institute folders found are: %s', institutes)
     # remove ETHz from list because we only need ETHZ-2
-    institutes.remove("ETHZ")
+    #institutes.remove("ETHZ")
     logging.info('Institute folders found are: %s', institutes)
 
     for inst in institutes:
@@ -111,6 +111,7 @@ def main():
                 gcm = "ECMWF-ERAINT"
             else:
                 gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
+                logging.info('gcms list is %s', gcms)
                 try:
                     gcms.remove("ECMWF-ERAINT")
                 except ValueError:
