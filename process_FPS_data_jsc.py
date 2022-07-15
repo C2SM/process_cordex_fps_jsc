@@ -199,10 +199,10 @@ def main():
                                     logging.info(infomsg)
                                     derived = True
                                     break
-
-                            warnmsg = ('No files found for %s', file_path)
-                            logging.warning(warnmsg)
-                            continue
+                            if len(filelist) == 0:
+                                warnmsg = ('No files found for %s', file_path)
+                                logging.warning(warnmsg)
+                                continue
 
                         logging.info('%s files found, start processing:', len(filelist))
                         # Loop over all files found in file_path
