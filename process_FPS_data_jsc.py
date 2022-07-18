@@ -30,8 +30,9 @@ import time_functions as tf
 # Define logfile and logger
 seconds = time.time()
 local_time = time.localtime(seconds)
-LOG_FILENAME = (f'logfiles/logging_{local_time.tm_year}{local_time.tm_mon}{local_time.tm_day}'
-                f'{local_time.tm_hour}{local_time.tm_min}{local_time.tm_sec}.out')
+LOG_FILENAME = (f'logfiles/logging_{local_time.tm_year}{local_time.tm_mon}'
+                f'{local_time.tm_mday}{local_time.tm_hour}{local_time.tm_min}'
+                f'{local_time.tm_sec}.out')
 logging.basicConfig(filename=LOG_FILENAME,
                     filemode='w',
                     format='%(levelname)s %(asctime)s: %(message)s',
