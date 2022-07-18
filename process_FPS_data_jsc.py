@@ -47,10 +47,10 @@ SCENARIOS = ["historical", "rcp85", "evaluation"]
 
 #VARIABLES = ["tas", "pr", "hus850", "psl", "zg500", "zg850",
 #             "tasmax", "tasmin", "snd", "orog"]
-VARIABLES = ["tas"]
+VARIABLES = ["hus850"]
 # time resolutions we want for each variable
 #TIME_RES = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
-TIME_RES = ["1hr"]
+TIME_RES = ["6hr"]
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ["1hr", "3hr", "6hr", "day"]
 
@@ -225,14 +225,24 @@ def main():
                                         f"{ensemble}_{rcm}_{nesting}_"
                                         f"{TIME_RES[v_ind]}_{time_range}")
                             if derived:
-                                if TIME_RES[v_ind] == '1h' and new_time_res in ['3h', '6h', 'day']:
-                                    # we do not upsample, native time frequency will be processed
+                                tmp_file = (f"{WORKDIR}/{varn}_{SUBDOMAIN}_{gcm}"
+                                            f"_{scen}_{ensemble}_{rcm}_{nesting}"
+                                            f"_{new_time_res}_{time_range}.nc")
+                                if (
+                                    TIME_RES[v_ind] == '1h' and
+                                    new_time_res in ['3h', '6h', 'day'] or
+                                    (TIME_RES[v_ind] == '6h' and
+                                    new_time_res == 'day')
+                                ):
+                                    infomsg=(f'TIME_RES[v_ind]: {TIME_RES[v_ind]}'
+                                             f' and new_time_res: {new_time_res}.'
+                                             f'We do not upsample, native time'
+                                             f' frequency will be processed!')
+                                    logging.info(infomsg)
                                     filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
                                                 f"{ensemble}_{rcm}_{nesting}_"
                                                 f"{new_time_res}_{time_range}")
-                                tmp_file = (f"{WORKDIR}/{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
-                                            f"{ensemble}_{rcm}_{nesting}_"
-                                            f"{new_time_res}_{time_range}.nc")
+
 
                             logging.info('Filename is %s', filename)
                             ofile = f"{OUTPUT_PATH}/{filename}.nc"
@@ -243,10 +253,13 @@ def main():
                                 logging.info("File %s already exists.", ofile)
                             else:
                                 if derived:
-                                    if ((TIME_RES[v_ind] == '1h' and new_time_res in
-                                        ['3h', '6h', 'day']) or
-                                        (TIME_RES[v_ind] == '6h' and new_time_res == 'day')):
-                                        # process native frequency, cannot increase frequency
+                                    if (
+                                        (TIME_RES[v_ind] == '1h' and
+                                        new_time_res in ['3h', '6h', 'day']) or
+                                        (TIME_RES[v_ind] == '6h' and
+                                        new_time_res == 'day')
+                                    ):
+                                        # process native frequency, do not increase frequency
                                         cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                          input=ifile, output=ofile)
                                     else:
@@ -260,7 +273,12 @@ def main():
                                         elif TIME_RES[v_ind] == '3h' and new_time_res == '1h':
                                             tf.calc_1h_to_3h(varn, tmp_file, ofile)
                                         else:
-                                            logging.error('Not implemented error!')
+                                            errormsg = (f'Not implemented error!'
+                                                        f' TIME_RES[v_ind]: %s,'
+                                                        f' new_time_res: %s',
+                                                        TIME_RES[v_ind],
+                                                        new_time_res)
+                                            logging.error(errormsg)
                                 else:
                                     # All we need to do is cut the SUBDOMAIN
                                     cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
