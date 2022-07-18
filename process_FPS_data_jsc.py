@@ -30,8 +30,8 @@ import time_functions as tf
 # Define logfile and logger
 seconds = time.time()
 local_time = time.localtime(seconds)
-LOG_FILENAME = (f"logfiles/logging_{local_time.tm_year}{local_time.tm_mon}"
-                f"{local_time.tm_hour}{local_time.tm_min}{local_time.tm_sec}.out")
+LOG_FILENAME = (f'logfiles/logging_{local_time.tm_year}{local_time.tm_mon}{local_time.tm_day}'
+                f'{local_time.tm_hour}{local_time.tm_min}{local_time.tm_sec}.out')
 logging.basicConfig(filename=LOG_FILENAME,
                     filemode='w',
                     format='%(levelname)s %(asctime)s: %(message)s',
@@ -40,33 +40,33 @@ logging.basicConfig(filename=LOG_FILENAME,
 ####################
 ### Define input ###
 ####################
-INPUT_PATH = "/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output"
+INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output'
 
-DOMAIN = "ALP-3"
-SCENARIOS = ["historical", "rcp85", "evaluation"]
+DOMAIN = 'ALP-3'
+SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
 #VARIABLES = ["tas", "pr", "hus850", "psl", "zg500", "zg850",
 #             "tasmax", "tasmin", "snd", "orog"]
-VARIABLES = ["hus850"]
+VARIABLES = ['hus850']
 # time resolutions we want for each variable
 #TIME_RES = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
-TIME_RES = ["6hr"]
+TIME_RES = ['6hr']
 # valid time resolutions to look in if the one we want is not available
-TRES_VALID = ["1hr", "3hr", "6hr", "day"]
+TRES_VALID = ['1hr', '3hr', '6hr', 'day']
 
-SUBDOMAIN = "allAlps"
+SUBDOMAIN = 'allAlps'
 LON1 = 5.3
 LON2 = 16.3
 LAT1 = 43.3
 LAT2 = 48.5
 
 OVERWRITE = False # Flag to trigger overwriting of Files
-OUTPUT_PATH = f"/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}"
-WORKDIR = "/home/rlorenz/fpscpcm/tmp/rlorenz/data/work"
+OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}'
+WORKDIR = '/home/rlorenz/fpscpcm/tmp/rlorenz/data/work'
 
 
 def get_folders(path):
-    """
+    '''
     Get all folder names in path
 
     Parameters
@@ -78,7 +78,7 @@ def get_folders(path):
     -------
     res: list
         list with all folder names
-    """
+    '''
     res = []
     for folder in os.listdir(path):
         if os.path.isdir(os.path.join(path, folder)):
@@ -87,7 +87,7 @@ def get_folders(path):
     return res
 
 def remove_item_from_list(orig_list, item):
-    """
+    '''
     Remove a known item from a list
 
     Parameters
@@ -101,7 +101,7 @@ def remove_item_from_list(orig_list, item):
     -------
     orig_list: list
         list without item
-    """
+    '''
     try:
         orig_list.remove(item)
     except ValueError:
@@ -111,10 +111,10 @@ def remove_item_from_list(orig_list, item):
     return orig_list
 
 def main():
-    """
+    '''
     Loop over all files found and cut to smaller domain,
     resample if necessary
-    """
+    '''
 
     # Create directories if needed
     if not os.access(OUTPUT_PATH, os.F_OK):
@@ -130,20 +130,20 @@ def main():
         os.exit()
 
     # Find all institutes, models etc.
-    institutes = get_folders(f"{INPUT_PATH}/{DOMAIN}/")
+    institutes = get_folders(f'{INPUT_PATH}/{DOMAIN}/')
     # remove ETHz from list because we only need ETHZ-2
-    institutes.remove("ETHZ")
+    institutes.remove('ETHZ')
     logging.info('Institute folders found are: %s', institutes)
 
     for inst in institutes:
         # Loop over variables, SCENARIOS, models
         for scen in SCENARIOS:
-            if scen == "evaluation":
-                gcm = "ECMWF-ERAINT"
+            if scen == 'evaluation':
+                gcm = 'ECMWF-ERAINT'
             else:
-                gcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}")
+                gcms = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}')
                 logging.info('gcms list is %s', gcms)
-                remove_item_from_list(gcms, "ECMWF-ERAINT")
+                remove_item_from_list(gcms, 'ECMWF-ERAINT')
 
                 # check if one gcm name found:
                 if len(gcms) > 1:
@@ -159,22 +159,22 @@ def main():
 
                 # find ensemble
                 try:
-                    ensembles = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}")
+                    ensembles = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}')
                 except FileNotFoundError:
                     warnmsg = ('No folder found for %s', scen)
                     logging.warning(warnmsg)
                     continue
-                remove_item_from_list(ensembles, "r0i0p0")
+                remove_item_from_list(ensembles, 'r0i0p0')
                 ensemble = ensembles[0]
                 # find rcm names
-                rcms = get_folders(f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/{ensemble}")
+                rcms = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/{ensemble}')
 
                 # loop over rcms
                 for rcm in rcms:
                     logging.info('RCM is %s', rcm)
                     for v_ind, varn in enumerate(VARIABLES):
-                        file_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}"
-                                     f"/{ensemble}/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc")
+                        file_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}'
+                                     f'/{ensemble}/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc')
                         derived = False
                         # Find all files matching pattern file_path
                         filelist = glob.glob(file_path)
@@ -189,9 +189,9 @@ def main():
                             logging.info(tres_valid_rm)
                             new_time_res = None
                             for new_time_res in tres_valid_rm:
-                                check_path = (f"{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/"
-                                              f"{scen}/{ensemble}/{rcm}/*/{new_time_res}/"
-                                              f"{varn}/*.nc")
+                                check_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/'
+                                              f'{scen}/{ensemble}/{rcm}/*/{new_time_res}/'
+                                              f'{varn}/*.nc')
                                 filelist = glob.glob(check_path)
                                 if len(filelist) != 0:
                                     infomsg=('Variable %s found in frequency %s',
@@ -215,23 +215,23 @@ def main():
                             # find time range included in file for output filename
                             # cdo showdate returns list with one string incl. all dates
                             dates = cdo.showdate(input=ifile)[0]
-                            firstdate = dates.split(" ")[0]
-                            firstdate_str = "".join(firstdate.split("-"))
-                            lastdate = dates.split(" ")[-1]
-                            lastdate_str = "".join(lastdate.split("-"))
-                            time_range = f"{firstdate_str}-{lastdate_str}"
+                            firstdate = dates.split(' ')[0]
+                            firstdate_str = ''.join(firstdate.split('-'))
+                            lastdate = dates.split(' ')[-1]
+                            lastdate_str = ''.join(lastdate.split('-'))
+                            time_range = f'{firstdate_str}-{lastdate_str}'
 
-                            filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
-                                        f"{ensemble}_{rcm}_{nesting}_"
-                                        f"{TIME_RES[v_ind]}_{time_range}")
+                            filename = (f'{varn}_{SUBDOMAIN}_{gcm}_{scen}_'
+                                        f'{ensemble}_{rcm}_{nesting}_'
+                                        f'{TIME_RES[v_ind]}_{time_range}')
                             if derived:
-                                tmp_file = (f"{WORKDIR}/{varn}_{SUBDOMAIN}_{gcm}"
-                                            f"_{scen}_{ensemble}_{rcm}_{nesting}"
-                                            f"_{new_time_res}_{time_range}.nc")
+                                tmp_file = (f'{WORKDIR}/{varn}_{SUBDOMAIN}_{gcm}'
+                                            f'_{scen}_{ensemble}_{rcm}_{nesting}'
+                                            f'_{new_time_res}_{time_range}.nc')
                                 if (
-                                    TIME_RES[v_ind] == '1h' and
-                                    new_time_res in ['3h', '6h', 'day'] or
-                                    (TIME_RES[v_ind] == '6h' and
+                                    TIME_RES[v_ind] == '1hr' and
+                                    new_time_res in ['3hr', '6hr', 'day'] or
+                                    (TIME_RES[v_ind] == '6hr' and
                                     new_time_res == 'day')
                                 ):
                                     infomsg=(f'TIME_RES[v_ind]: {TIME_RES[v_ind]}'
@@ -239,24 +239,24 @@ def main():
                                              f'We do not upsample, native time'
                                              f' frequency will be processed!')
                                     logging.info(infomsg)
-                                    filename = (f"{varn}_{SUBDOMAIN}_{gcm}_{scen}_"
-                                                f"{ensemble}_{rcm}_{nesting}_"
-                                                f"{new_time_res}_{time_range}")
+                                    filename = (f'{varn}_{SUBDOMAIN}_{gcm}_{scen}_'
+                                                f'{ensemble}_{rcm}_{nesting}_'
+                                                f'{new_time_res}_{time_range}')
 
 
                             logging.info('Filename is %s', filename)
-                            ofile = f"{OUTPUT_PATH}/{filename}.nc"
+                            ofile = f'{OUTPUT_PATH}/{filename}.nc'
 
                             # Check if ofile already exists, create if does not exist
                             # yet or OVERWRITE=True
                             if os.path.isfile(ofile) and not OVERWRITE:
-                                logging.info("File %s already exists.", ofile)
+                                logging.info('File %s already exists.', ofile)
                             else:
                                 if derived:
                                     if (
-                                        (TIME_RES[v_ind] == '1h' and
-                                        new_time_res in ['3h', '6h', 'day']) or
-                                        (TIME_RES[v_ind] == '6h' and
+                                        (TIME_RES[v_ind] == '1hr' and
+                                        new_time_res in ['3hr', '6hr', 'day']) or
+                                        (TIME_RES[v_ind] == '6hr' and
                                         new_time_res == 'day')
                                     ):
                                         # process native frequency, do not increase frequency
@@ -268,9 +268,9 @@ def main():
                                         # Variable needs to be derived for the required time frequency
                                         if TIME_RES[v_ind] == 'day':
                                             tf.calc_to_day(varn, tmp_file, ofile)
-                                        elif TIME_RES[v_ind] == '6h' and new_time_res == '1h':
+                                        elif TIME_RES[v_ind] == '6hr' and new_time_res == '1hr':
                                             tf.calc_1h_to_6h(varn, tmp_file, ofile)
-                                        elif TIME_RES[v_ind] == '3h' and new_time_res == '1h':
+                                        elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
                                             tf.calc_1h_to_3h(varn, tmp_file, ofile)
                                         else:
                                             errormsg = (f'Not implemented error!'
