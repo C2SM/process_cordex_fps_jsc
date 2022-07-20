@@ -37,6 +37,7 @@ logging.basicConfig(filename=LOG_FILENAME,
                     filemode='w',
                     format='%(levelname)s %(asctime)s: %(message)s',
                     level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 ####################
 ### Define input ###
@@ -107,7 +108,7 @@ def remove_item_from_list(orig_list, item):
         orig_list.remove(item)
     except ValueError:
         infomsg = ('No %s folder to remove from list.', item)
-        logging.info(infomsg)
+        logger.info(infomsg)
 
     return orig_list
 
@@ -127,14 +128,14 @@ def main():
     if len(TIME_RES) != len(VARIABLES):
         errormsg = ('Lists TIME_RES and VARIABLES do not have equal length, '
                     'please check those lists!')
-        logging.error(errormsg)
+        logger.error(errormsg)
         os.exit()
 
     # Find all institutes, models etc.
     institutes = get_folders(f'{INPUT_PATH}/{DOMAIN}/')
     # remove ETHz from list because we only need ETHZ-2
     institutes.remove('ETHZ')
-    logging.info('Institute folders found are: %s', institutes)
+    logger.info('Institute folders found are: %s', institutes)
 
     for inst in institutes:
         # Loop over variables, SCENARIOS, models
@@ -143,18 +144,18 @@ def main():
                 gcm = 'ECMWF-ERAINT'
             else:
                 gcms = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}')
-                logging.info('gcms list is %s', gcms)
+                logger.info('gcms list is %s', gcms)
                 remove_item_from_list(gcms, 'ECMWF-ERAINT')
 
                 # check if one gcm name found:
                 if len(gcms) > 1:
                     errormsg = ('More than one gcm folder found! %s', gcms)
-                    logging.error(errormsg)
+                    logger.error(errormsg)
                     exit()
                 if len(gcms) == 1:
-                    logging.info('One gcm folder found: %s', gcms[0])
+                    logger.info('One gcm folder found: %s', gcms[0])
                 else:
-                    logging.warning('No gcm folder found, continuing')
+                    logger.warning('No gcm folder found, continuing')
                     continue
                 gcm = gcms[0]
 
@@ -163,7 +164,7 @@ def main():
                     ensembles = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}')
                 except FileNotFoundError:
                     warnmsg = ('No folder found for %s', scen)
-                    logging.warning(warnmsg)
+                    logger.warning(warnmsg)
                     continue
                 remove_item_from_list(ensembles, 'r0i0p0')
                 ensemble = ensembles[0]
@@ -172,7 +173,7 @@ def main():
 
                 # loop over rcms
                 for rcm in rcms:
-                    logging.info('RCM is %s', rcm)
+                    logger.info('RCM is %s', rcm)
                     for v_ind, varn in enumerate(VARIABLES):
                         file_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}'
                                      f'/{ensemble}/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc')
@@ -183,11 +184,11 @@ def main():
                             warnmsg = ('Filelist is empty, no files for path %s,'
                                        ' keep looking in other frequencies.',
                                        file_path)
-                            logging.warning(warnmsg)
+                            logger.warning(warnmsg)
                             # Variables can be in different frequencies than the
                             # required ones, check other folders
                             tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v_ind]]
-                            logging.info(tres_valid_rm)
+                            logger.info(tres_valid_rm)
                             new_time_res = None
                             for new_time_res in tres_valid_rm:
                                 check_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/'
@@ -197,15 +198,15 @@ def main():
                                 if len(filelist) != 0:
                                     infomsg=('Variable %s found in frequency %s',
                                              varn, new_time_res)
-                                    logging.info(infomsg)
+                                    logger.info(infomsg)
                                     derived = True
                                     break
                             if len(filelist) == 0:
                                 warnmsg = ('No files found for %s', file_path)
-                                logging.warning(warnmsg)
+                                logger.warning(warnmsg)
                                 continue
 
-                        logging.info('%s files found, start processing:', len(filelist))
+                        logger.info('%s files found, start processing:', len(filelist))
                         # Loop over all files found in file_path
                         for ifile in filelist:
                             split_ifile = ifile.split('/')
@@ -239,19 +240,19 @@ def main():
                                              f' and new_time_res: {new_time_res}.'
                                              f'We do not upsample, native time'
                                              f' frequency will be processed!')
-                                    logging.info(infomsg)
+                                    logger.info(infomsg)
                                     filename = (f'{varn}_{SUBDOMAIN}_{gcm}_{scen}_'
                                                 f'{ensemble}_{rcm}_{nesting}_'
                                                 f'{new_time_res}_{time_range}')
 
 
-                            logging.info('Filename is %s', filename)
+                            logger.info('Filename is %s', filename)
                             ofile = f'{OUTPUT_PATH}/{filename}.nc'
 
                             # Check if ofile already exists, create if does not exist
                             # yet or OVERWRITE=True
                             if os.path.isfile(ofile) and not OVERWRITE:
-                                logging.info('File %s already exists.', ofile)
+                                logger.info('File %s already exists.', ofile)
                             else:
                                 if derived:
                                     if (
@@ -270,16 +271,18 @@ def main():
                                         if TIME_RES[v_ind] == 'day':
                                             tf.calc_to_day(varn, tmp_file, ofile)
                                         elif TIME_RES[v_ind] == '6hr' and new_time_res == '1hr':
+                                            logger.info(f'Calculating from new_time_res: {new_time_res}'
+                                                        f' to TIME_RES[v_ind]: {TIME_RES[v_ind]}')
                                             tf.calc_1h_to_6h(varn, tmp_file, ofile)
                                         elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
                                             tf.calc_1h_to_3h(varn, tmp_file, ofile)
                                         else:
-                                            errormsg = (f'Not implemented error!'
-                                                        f' TIME_RES[v_ind]: %s,'
-                                                        f' new_time_res: %s',
+                                            errormsg = ('Not implemented error!'
+                                                        ' TIME_RES[v_ind]: %s,'
+                                                        ' new_time_res: %s',
                                                         TIME_RES[v_ind],
                                                         new_time_res)
-                                            logging.error(errormsg)
+                                            logger.error(errormsg)
                                 else:
                                     # All we need to do is cut the SUBDOMAIN
                                     cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
