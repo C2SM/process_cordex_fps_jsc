@@ -79,6 +79,9 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
                 var = ds_in[new_key]
                 # ensure variable name is varn
                 ds_in.rename({new_key: varn})
+            except KeyError:
+                logger.error(f'The variable name in the file is not known')
+                print(ds_in)
 
         if var.attrs['cell_methods'] == 'time: point':
             #ds_6h = ds_in.resample(time='6h').asfreq()
