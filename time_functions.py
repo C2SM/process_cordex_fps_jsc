@@ -16,6 +16,7 @@ Abstract: Functions to calculate variable into different frequencies,
 import logging
 import xarray as xr
 
+logger = logging.getLogger(__name__)
 
 def calc_1h_to_3h(varn, infile, threehour_file):
     """
@@ -35,6 +36,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
     -------
     Nothing, netcdf written to disk
     """
+    logger.info(f'Calculating 3-hourly values from hourly')
     ds_in = xr.open_dataset(infile)
     var = ds_in[varn]
     if var.attrs['cell_methods'] == "time: point":
@@ -44,7 +46,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
     else:
         errormsg = (f'Wrong cell_method, should be point but is '
                     f'{var.attrs["cell_methods"]}')
-        logging.error(errormsg)
+        logger.error(errormsg)
     ds_in.close()
 
 
@@ -66,6 +68,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
     -------
     Nothing, netcdf written to disk
     """
+    logger.info(f'Calculating 6-hourly values from hourly')
     ds_in = xr.open_dataset(infile)
     var = ds_in[varn]
     if var.attrs['cell_methods'] == "time: point":
@@ -75,7 +78,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
     else:
         errormsg = (f'Wrong cell_method, should be point but is '
                     f'{var.attrs["cell_methods"]}')
-        logging.error(errormsg)
+        logger.error(errormsg)
     ds_in.close()
 
 
@@ -97,7 +100,7 @@ def calc_to_day(varn, infile, day_file):
     -------
     Nothing, netcdf written to disk
     """
-
+    logger.info(f'Calculating daily values')
     ds_in = xr.open_dataset(infile)
     if varn == 'snd':
         # snow depth should be mean over time
@@ -108,7 +111,7 @@ def calc_to_day(varn, infile, day_file):
         else:
             errormsg = (f'Wrong cell_method, should be mean but is '
                         f'{snd.attrs["cell_methods"]}')
-            logging.error(errormsg)
+            logger.error(errormsg)
 
     elif varn == 'tasmin':
         # daily minimum
@@ -118,7 +121,7 @@ def calc_to_day(varn, infile, day_file):
         else:
             errormsg = (f'Wrong cell_method, should be minimum but is '
                         f'{tasmin.attrs["cell_methods"]}')
-            logging.error(errormsg)
+            logger.error(errormsg)
     elif varn == 'tasmax':
         # daily maximum
         tasmax = ds_in['tasmax']
@@ -127,10 +130,10 @@ def calc_to_day(varn, infile, day_file):
         else:
             errormsg = (f'Wrong cell_method, should be maximum but is '
                         f'{tasmax.attrs["cell_methods"]}')
-            logging.error(errormsg)
+            logger.error(errormsg)
     else:
         errormsg = ('Not implemented! variable needs to be snd, tasmax, or tasmin.')
-        logging.error(errormsg)
+        logger.error(errormsg)
 
     ds_day.to_netcdf(day_file, format='NETCDF4_CLASSIC')
     ds_in.close()
