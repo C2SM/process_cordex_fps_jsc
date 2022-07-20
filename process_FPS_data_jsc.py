@@ -283,6 +283,8 @@ def main():
                                                         TIME_RES[v_ind],
                                                         new_time_res)
                                             logger.error(errormsg)
+                                    # clean up WORKDIR
+                                    os.system(f'rm {WORKDIR}/*')
                                 else:
                                     # All we need to do is cut the SUBDOMAIN
                                     cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
