@@ -15,6 +15,7 @@ Abstract: Functions to calculate variable into different frequencies,
 """
 import logging
 import xarray as xr
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +71,22 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
     """
     logger.info(f'Calculating 6-hourly values from hourly')
     with xr.open_dataset(infile) as ds_in:
-        var = ds_in[varn]
+        try:
+            var = ds_in[varn]
+        except KeyError:
+            try:
+                new_key = re.split('(\d+)', varn)[0]
+                var = ds_in[new_key]
+                # ensure variable name is varn
+                ds_in.rename({new_key: varn})
+
         if var.attrs['cell_methods'] == 'time: point':
-            ds_6h = ds_in.resample(time='6h').asfreq()
-            ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
+            #ds_6h = ds_in.resample(time='6h').asfreq()
+            ds_in.resample(time='6h').asfreq()
+            #ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
+            ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
-            ds_6h.close() 
+            #ds_6h.close()
         else:
             errormsg = (f'Wrong cell_method, should be point but is '
                         f'{var.attrs["cell_methods"]}')
