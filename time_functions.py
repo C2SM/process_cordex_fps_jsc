@@ -40,13 +40,14 @@ def calc_1h_to_3h(varn, infile, threehour_file):
     logger.info(f'Calculating 3-hourly values from hourly')
     ds_in = xr.open_dataset(infile)
     var = ds_in[varn]
-    if var.attrs['cell_methods'] == "time: point":
+    if var.attrs['cell_methods'] == "time: point" or
+        var.attrs['cell_methods'] == 'lev: mean':
         ds_3h = ds_in.resample(time='3h').asfreq()
         ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC')
 
     else:
-        errormsg = (f'Wrong cell_method, should be point but is '
-                    f'{var.attrs["cell_methods"]}')
+        errormsg = (f'Wrong cell_method, should be time: point (or lev: mean)'
+                    f' but is {var.attrs["cell_methods"]}')
         logger.error(errormsg)
     ds_in.close()
 
@@ -81,20 +82,60 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
                 ds_in.rename({new_key: varn})
             except KeyError:
                 logger.error(f'The variable name in the file is not known')
-                print(ds_in)
+                logger.error(ds_in)
 
-        if var.attrs['cell_methods'] == 'time: point':
-            #ds_6h = ds_in.resample(time='6h').asfreq()
+        if var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'lev: mean':
             ds_in.resample(time='6h').asfreq()
-            #ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
-            #ds_6h.close()
         else:
-            errormsg = (f'Wrong cell_method, should be point but is '
-                        f'{var.attrs["cell_methods"]}')
+            errormsg = (f'Wrong cell_method, should be time: point (or lev: mean)'
+                        f' but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
 
+
+def calc_3h_to_6h(varn, infile, sixhour_file):
+    """
+    Function to resample data from 3-hourly to 6-hourly
+    6-hourly variables cell_methods should all be "time: point"
+
+    Parameters
+    ----------
+    varn: string
+        variable name
+    infile: string
+        path to input file
+    sixhour_file: string
+        path to new netcdf with 6-hourly values
+
+    Returns
+    -------
+    Nothing, netcdf written to disk
+    """
+    logger.info(f'Calculating 6-hourly values from 3-hourly')
+    with xr.open_dataset(infile) as ds_in:
+        try:
+            var = ds_in[varn]
+        except KeyError:
+            try:
+                new_key = re.split('(\d+)', varn)[0]
+                var = ds_in[new_key]
+                # ensure variable name is varn
+                ds_in.rename({new_key: varn})
+            except KeyError:
+                logger.error(f'The variable name in the file is not known')
+                logger.error(ds_in)
+
+        if var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'lev: mean':
+            ds_in.resample(time='6h').asfreq()
+            ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
+            logger.info(f'6-hourly file {sixhour_file} written.')
+        else:
+            errormsg = (f'Wrong cell_method, should be time: point (or lev: mean)'
+                        f' but is {var.attrs["cell_methods"]}')
+            logger.error(errormsg)
 
 
 def calc_to_day(varn, infile, day_file):
