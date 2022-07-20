@@ -75,6 +75,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
             ds_6h = ds_in.resample(time='6h').asfreq()
             ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
+            ds_6h.close() 
         else:
             errormsg = (f'Wrong cell_method, should be point but is '
                         f'{var.attrs["cell_methods"]}')
