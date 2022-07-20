@@ -69,17 +69,17 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
     Nothing, netcdf written to disk
     """
     logger.info(f'Calculating 6-hourly values from hourly')
-    ds_in = xr.open_dataset(infile)
-    var = ds_in[varn]
-    if var.attrs['cell_methods'] == 'time: point':
-        ds_6h = ds_in.resample(time='6h').asfreq()
-        ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
-        logger.info(f'6-hourly file {sixhour_file} written.')
-    else:
-        errormsg = (f'Wrong cell_method, should be point but is '
-                    f'{var.attrs["cell_methods"]}')
-        logger.error(errormsg)
-    ds_in.close()
+    with xr.open_dataset(infile) as ds_in:
+        var = ds_in[varn]
+        if var.attrs['cell_methods'] == 'time: point':
+            ds_6h = ds_in.resample(time='6h').asfreq()
+            ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
+            logger.info(f'6-hourly file {sixhour_file} written.')
+        else:
+            errormsg = (f'Wrong cell_method, should be point but is '
+                        f'{var.attrs["cell_methods"]}')
+            logger.error(errormsg)
+
 
 
 def calc_to_day(varn, infile, day_file):
