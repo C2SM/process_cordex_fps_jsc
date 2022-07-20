@@ -33,6 +33,7 @@ local_time = time.localtime(seconds)
 LOG_FILENAME = (f'logfiles/logging_{local_time.tm_year}{local_time.tm_mon}'
                 f'{local_time.tm_mday}{local_time.tm_hour}{local_time.tm_min}'
                 f'{local_time.tm_sec}.out')
+
 logging.basicConfig(filename=LOG_FILENAME,
                     filemode='w',
                     format='%(levelname)s %(asctime)s: %(message)s',
@@ -276,6 +277,8 @@ def main():
                                             tf.calc_1h_to_6h(varn, tmp_file, ofile)
                                         elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
                                             tf.calc_1h_to_3h(varn, tmp_file, ofile)
+                                        elif TIME_RES[v_ind] == '6hr' and new_time_res == '3hr':
+                                            tf.calc_3h_to_6h(varn, tmp_file, ofile)
                                         else:
                                             errormsg = ('Not implemented error!'
                                                         ' TIME_RES[v_ind]: %s,'
