@@ -14,8 +14,8 @@ Abstract: Functions to calculate variable into different frequencies,
 
 """
 import logging
-import xarray as xr
 import re
+import xarray as xr
 
 logger = logging.getLogger(__name__)
 
@@ -37,16 +37,16 @@ def calc_1h_to_3h(varn, infile, threehour_file):
     -------
     Nothing, netcdf written to disk
     """
-    logger.info(f'Calculating 3-hourly values from hourly')
+    logger.info('Calculating 3-hourly values from hourly')
     ds_in = xr.open_dataset(infile)
     var = ds_in[varn]
-    if var.attrs['cell_methods'] == "time: point" or
-        var.attrs['cell_methods'] == 'lev: mean':
+    if (var.attrs['cell_methods'] == "time: point" or
+        var.attrs['cell_methods'] == 'lev: mean'):
         ds_3h = ds_in.resample(time='3h').asfreq()
         ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC')
 
     else:
-        errormsg = (f'Wrong cell_method, should be time: point (or lev: mean)'
+        errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                     f' but is {var.attrs["cell_methods"]}')
         logger.error(errormsg)
     ds_in.close()
@@ -70,7 +70,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
     -------
     Nothing, netcdf written to disk
     """
-    logger.info(f'Calculating 6-hourly values from hourly')
+    logger.info('Calculating 6-hourly values from hourly')
     with xr.open_dataset(infile) as ds_in:
         try:
             var = ds_in[varn]
@@ -81,16 +81,16 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
                 # ensure variable name is varn
                 ds_in.rename({new_key: varn})
             except KeyError:
-                logger.error(f'The variable name in the file is not known')
+                logger.error('The variable name in the file is not known')
                 logger.error(ds_in)
 
-        if var.attrs['cell_methods'] == 'time: point' or
-            var.attrs['cell_methods'] == 'lev: mean':
+        if (var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'lev: mean'):
             ds_in.resample(time='6h').asfreq()
             ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
         else:
-            errormsg = (f'Wrong cell_method, should be time: point (or lev: mean)'
+            errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
 
@@ -113,7 +113,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
     -------
     Nothing, netcdf written to disk
     """
-    logger.info(f'Calculating 6-hourly values from 3-hourly')
+    logger.info('Calculating 6-hourly values from 3-hourly')
     with xr.open_dataset(infile) as ds_in:
         try:
             var = ds_in[varn]
@@ -124,16 +124,16 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
                 # ensure variable name is varn
                 ds_in.rename({new_key: varn})
             except KeyError:
-                logger.error(f'The variable name in the file is not known')
+                logger.error('The variable name in the file is not known')
                 logger.error(ds_in)
 
-        if var.attrs['cell_methods'] == 'time: point' or
-            var.attrs['cell_methods'] == 'lev: mean':
+        if (var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'lev: mean'):
             ds_in.resample(time='6h').asfreq()
             ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
         else:
-            errormsg = (f'Wrong cell_method, should be time: point (or lev: mean)'
+            errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
 
@@ -156,7 +156,7 @@ def calc_to_day(varn, infile, day_file):
     -------
     Nothing, netcdf written to disk
     """
-    logger.info(f'Calculating daily values')
+    logger.info('Calculating daily values')
     ds_in = xr.open_dataset(infile)
     if varn == 'snd':
         # snow depth should be mean over time
@@ -165,7 +165,7 @@ def calc_to_day(varn, infile, day_file):
         if snd.attrs['cell_methods'] == "time: mean":
             ds_day = ds_in.resample(time='1D').mean()
         else:
-            errormsg = (f'Wrong cell_method, should be mean but is '
+            errormsg = ('Wrong cell_method, should be mean but is '
                         f'{snd.attrs["cell_methods"]}')
             logger.error(errormsg)
 
@@ -175,7 +175,7 @@ def calc_to_day(varn, infile, day_file):
         if tasmin.attrs['cell_methods'] == "time: minimum":
             ds_day = ds_in.resample(time='1D').min()
         else:
-            errormsg = (f'Wrong cell_method, should be minimum but is '
+            errormsg = ('Wrong cell_method, should be minimum but is '
                         f'{tasmin.attrs["cell_methods"]}')
             logger.error(errormsg)
     elif varn == 'tasmax':
@@ -184,7 +184,7 @@ def calc_to_day(varn, infile, day_file):
         if tasmax.attrs['cell_methods'] == "time: maximum":
             ds_day = ds_in.resample(time='1D').max()
         else:
-            errormsg = (f'Wrong cell_method, should be maximum but is '
+            errormsg = ('Wrong cell_method, should be maximum but is '
                         f'{tasmax.attrs["cell_methods"]}')
             logger.error(errormsg)
     else:
