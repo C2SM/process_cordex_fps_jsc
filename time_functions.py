@@ -19,6 +19,40 @@ import xarray as xr
 
 logger = logging.getLogger(__name__)
 
+
+def ensure_no_fill_value_in_coords(varn, ds):
+    """
+    Function to create encoding dictionary for writing netcdfs which have no added
+    _FillValue = NaN in coordinate variables but identical _FillValue to original
+    dataset
+
+    Parameters
+    ----------
+    varn: string
+        variable name
+    ds: xarray dataset
+        dataset to be written to netcdf
+
+    Return:
+    encoding: dict
+        dict holding all _FillValues
+    """
+
+    encoding = {}
+    try:
+        fill_value = ds[varn].encoding['_FillValue']
+    except KeyError:
+        fill_value = 1.e20
+    all_keys=list(ds.keys())
+    all_keys.remove(varn)
+    for k in all_keys:
+        encoding[k] = {'_FillValue': None}
+    for c in list(ds.coords):
+        encoding[c] = {'_FillValue': None}
+    encoding[varn] = {'_FillValue': fill_value}
+    return encoding
+
+
 def calc_1h_to_3h(varn, infile, threehour_file):
     """
     Function to resample data from hourly to 3-hourly
@@ -61,7 +95,12 @@ def calc_1h_to_3h(varn, infile, threehour_file):
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' or time: mean but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
-        ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC')
+
+        # _FillValue for variable should be same as before, all other (coordinate)
+        # variables should have no _FillValue
+        encoding = ensure_no_fill_value_in_coords(varn, ds_3h)
+
+        ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC', encoding=encoding)
         logger.info(f'3-hourly file {threehour_file} written.')
 
 def calc_1h_to_6h(varn, infile, sixhour_file):
@@ -106,7 +145,10 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' or time: mean but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
-        ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
+
+        encoding = ensure_no_fill_value_in_coords(varn, ds_6h)
+
+        ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC', encoding=encoding)
         logger.info(f'6-hourly file {sixhour_file} written.')
 
 def calc_3h_to_6h(varn, infile, sixhour_file):
@@ -151,7 +193,10 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' or time: mean but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
-        ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
+
+        encoding = ensure_no_fill_value_in_coords(varn, ds_6h)
+
+        ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC', encoding=encoding)
         logger.info(f'6-hourly file {sixhour_file} written.')
 
 def calc_to_day(varn, infile, day_file):
@@ -207,4 +252,8 @@ def calc_to_day(varn, infile, day_file):
             errormsg = ('Not implemented! variable needs to be snd, tasmax, or tasmin.')
             logger.error(errormsg)
 
-        ds_day.to_netcdf(day_file, format='NETCDF4_CLASSIC')
+        # _FillValue for variable should be same as before, all other (coordinate)
+        # variables should have no _FillValue
+        encoding = ensure_no_fill_value_in_coords(varn, ds_day)
+
+        ds_day.to_netcdf(day_file, format='NETCDF4_CLASSIC', encoding=encoding)
