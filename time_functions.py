@@ -114,7 +114,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
     Nothing, netcdf written to disk
     """
     logger.info('Calculating 6-hourly values from 3-hourly')
-    with xr.open_dataset(infile) as ds_in:
+    with xr.open_dataset(infile, decode_times=False) as ds_in:
         try:
             var = ds_in[varn]
         except KeyError:
