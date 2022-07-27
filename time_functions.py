@@ -42,7 +42,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
     var = ds_in[varn]
     if (var.attrs['cell_methods'] == "time: point" or
         var.attrs['cell_methods'] == 'lev: mean'):
-        ds_3h = ds_in.resample(time='3h').asfreq()
+        ds_3h = ds_in.resample(time='3H').asfreq()
         ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC')
 
     else:
@@ -86,7 +86,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
 
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
-            ds_in.resample(time='6h').asfreq()
+            ds_in.resample(time='6H').asfreq()
             ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
         else:
@@ -114,7 +114,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
     Nothing, netcdf written to disk
     """
     logger.info('Calculating 6-hourly values from 3-hourly')
-    with xr.open_dataset(infile, decode_times=False) as ds_in:
+    with xr.open_dataset(infile) as ds_in:
         try:
             var = ds_in[varn]
         except KeyError:
@@ -129,7 +129,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
 
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
-            ds_in.resample(time='6h').asfreq()
+            ds_in.resample(time='6H').asfreq()
             ds_in.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC')
             logger.info(f'6-hourly file {sixhour_file} written.')
         else:
