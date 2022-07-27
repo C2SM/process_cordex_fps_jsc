@@ -63,7 +63,7 @@ LON2 = 16.3
 LAT1 = 43.3
 LAT2 = 48.5
 
-OVERWRITE = False # Flag to trigger overwriting of Files
+OVERWRITE = True # Flag to trigger overwriting of Files
 OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}'
 WORKDIR = '/home/rlorenz/fpscpcm/tmp/rlorenz/data/work'
 
