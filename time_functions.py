@@ -91,7 +91,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
             ds_3h = ds_in.resample(time='3H').asfreq()
-        elif (var.attrs['cell_methods'] == 'time: mean'):
+        elif var.attrs['cell_methods'] == 'time: mean':
             ds_3h = ds_in.resample(time='3H').mean()
         else:
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
@@ -103,7 +103,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
         encoding = ensure_no_fill_value_in_coords(varn, ds_3h)
         ds_3h.attrs['frequency'] = '3hr'
         ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC', encoding=encoding)
-        logger.info(f'3-hourly file {threehour_file} written.')
+        logger.info('3-hourly file %s written.', threehour_file)
 
 def calc_1h_to_6h(varn, infile, sixhour_file):
     """
@@ -141,7 +141,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
             ds_6h = ds_in.resample(time='6H').asfreq()
-        elif (var.attrs['cell_methods'] == 'time: mean'):
+        elif var.attrs['cell_methods'] == 'time: mean':
             ds_6h = ds_in.resample(time='6H').mean()
         else:
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
@@ -151,7 +151,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
         encoding = ensure_no_fill_value_in_coords(varn, ds_6h)
         ds_6h.attrs['frequency'] = '6hr'
         ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC', encoding=encoding)
-        logger.info(f'6-hourly file {sixhour_file} written.')
+        logger.info('6-hourly file %s written.', sixhour_file)
 
 def calc_3h_to_6h(varn, infile, sixhour_file):
     """
@@ -189,7 +189,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
             ds_6h = ds_in.resample(time='6H').asfreq()
-        elif (var.attrs['cell_methods'] == 'time: mean'):
+        elif var.attrs['cell_methods'] == 'time: mean':
             ds_6h = ds_in.resample(time='6H').mean()
         else:
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
@@ -199,7 +199,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
         encoding = ensure_no_fill_value_in_coords(varn, ds_6h)
         ds_6h.attrs['frequency'] = '6hr'
         ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC', encoding=encoding)
-        logger.info(f'6-hourly file {sixhour_file} written.')
+        logger.info('6-hourly file %s written.', sixhour_file)
 
 def calc_to_day(varn, infile, day_file):
     """
@@ -259,3 +259,4 @@ def calc_to_day(varn, infile, day_file):
         encoding = ensure_no_fill_value_in_coords(varn, ds_day)
         ds_day.attrs['frequency'] = 'day'
         ds_day.to_netcdf(day_file, format='NETCDF4_CLASSIC', encoding=encoding)
+        logger.info('daily file %s written.', day_file)
