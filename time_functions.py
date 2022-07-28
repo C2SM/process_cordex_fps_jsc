@@ -19,6 +19,8 @@ import xarray as xr
 
 logger = logging.getLogger(__name__)
 
+# set global option to keep attributes
+xr.set_options(keep_attrs=True)
 
 def ensure_no_fill_value_in_coords(varn, ds):
     """
@@ -88,9 +90,9 @@ def calc_1h_to_3h(varn, infile, threehour_file):
 
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
-            ds_3h = ds_in.resample(time='3H', keep_attrs=True).asfreq()
+            ds_3h = ds_in.resample(time='3H').asfreq()
         elif (var.attrs['cell_methods'] == 'time: mean'):
-            ds_3h = ds_in.resample(time='3H', keep_attrs=True).mean()
+            ds_3h = ds_in.resample(time='3H').mean()
         else:
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' or time: mean but is {var.attrs["cell_methods"]}')
@@ -99,7 +101,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
         # _FillValue for variable should be same as before, all other (coordinate)
         # variables should have no _FillValue
         encoding = ensure_no_fill_value_in_coords(varn, ds_3h)
-
+        ds_3h.attrs['frequency'] = '3hr'
         ds_3h.to_netcdf(threehour_file, format='NETCDF4_CLASSIC', encoding=encoding)
         logger.info(f'3-hourly file {threehour_file} written.')
 
@@ -138,16 +140,16 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
 
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
-            ds_6h = ds_in.resample(time='6H', keep_attrs=True).asfreq()
+            ds_6h = ds_in.resample(time='6H').asfreq()
         elif (var.attrs['cell_methods'] == 'time: mean'):
-            ds_6h = ds_in.resample(time='6H', keep_attrs=True).mean()
+            ds_6h = ds_in.resample(time='6H').mean()
         else:
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' or time: mean but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
 
         encoding = ensure_no_fill_value_in_coords(varn, ds_6h)
-
+        ds_6h.attrs['frequency'] = '6hr'
         ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC', encoding=encoding)
         logger.info(f'6-hourly file {sixhour_file} written.')
 
@@ -186,16 +188,16 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
 
         if (var.attrs['cell_methods'] == 'time: point' or
             var.attrs['cell_methods'] == 'lev: mean'):
-            ds_6h = ds_in.resample(time='6H', keep_attrs=True).asfreq()
+            ds_6h = ds_in.resample(time='6H').asfreq()
         elif (var.attrs['cell_methods'] == 'time: mean'):
-            ds_6h = ds_in.resample(time='6H', keep_attrs=True).mean()
+            ds_6h = ds_in.resample(time='6H').mean()
         else:
             errormsg = ('Wrong cell_method, should be time: point (or lev: mean)'
                         f' or time: mean but is {var.attrs["cell_methods"]}')
             logger.error(errormsg)
 
         encoding = ensure_no_fill_value_in_coords(varn, ds_6h)
-
+        ds_6h.attrs['frequency'] = '6hr'
         ds_6h.to_netcdf(sixhour_file, format='NETCDF4_CLASSIC', encoding=encoding)
         logger.info(f'6-hourly file {sixhour_file} written.')
 
@@ -224,7 +226,7 @@ def calc_to_day(varn, infile, day_file):
             # check cell_methods
             snd = ds_in['snd']
             if snd.attrs['cell_methods'] == "time: mean":
-                ds_day = ds_in.resample(time='1D', keep_attrs=True).mean()
+                ds_day = ds_in.resample(time='1D').mean()
             else:
                 errormsg = ('Wrong cell_method, should be mean but is '
                             f'{snd.attrs["cell_methods"]}')
@@ -234,7 +236,7 @@ def calc_to_day(varn, infile, day_file):
             # daily minimum
             tasmin = ds_in['tasmin']
             if tasmin.attrs['cell_methods'] == "time: minimum":
-                ds_day = ds_in.resample(time='1D', keep_attrs=True).min()
+                ds_day = ds_in.resample(time='1D').min()
             else:
                 errormsg = ('Wrong cell_method, should be minimum but is '
                             f'{tasmin.attrs["cell_methods"]}')
@@ -243,7 +245,7 @@ def calc_to_day(varn, infile, day_file):
             # daily maximum
             tasmax = ds_in['tasmax']
             if tasmax.attrs['cell_methods'] == "time: maximum":
-                ds_day = ds_in.resample(time='1D', keep_attrs=True).max()
+                ds_day = ds_in.resample(time='1D').max()
             else:
                 errormsg = ('Wrong cell_method, should be maximum but is '
                             f'{tasmax.attrs["cell_methods"]}')
@@ -255,5 +257,5 @@ def calc_to_day(varn, infile, day_file):
         # _FillValue for variable should be same as before, all other (coordinate)
         # variables should have no _FillValue
         encoding = ensure_no_fill_value_in_coords(varn, ds_day)
-
+        ds_day.attrs['frequency'] = 'day'
         ds_day.to_netcdf(day_file, format='NETCDF4_CLASSIC', encoding=encoding)
