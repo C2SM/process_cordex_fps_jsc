@@ -193,7 +193,6 @@ def main():
                             # Variables can be in different frequencies than the
                             # required ones, check other folders
                             tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v_ind]]
-                            logger.info(tres_valid_rm)
                             new_time_res = None
                             for new_time_res in tres_valid_rm:
                                 check_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/'
@@ -270,12 +269,11 @@ def main():
                                     else:
                                         cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                          input=ifile, output=tmp_file)
-                                        # Variable needs to be derived for the required time frequency
+                                        # Variable needs to be derived for the
+                                        # required time frequency
                                         if TIME_RES[v_ind] == 'day':
                                             tf.calc_to_day(varn, tmp_file, ofile)
                                         elif TIME_RES[v_ind] == '6hr' and new_time_res == '1hr':
-                                            logger.info(f'Calculating from new_time_res: {new_time_res}'
-                                                        f' to TIME_RES[v_ind]: {TIME_RES[v_ind]}')
                                             tf.calc_1h_to_6h(varn, tmp_file, ofile)
                                         elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
                                             tf.calc_1h_to_3h(varn, tmp_file, ofile)
