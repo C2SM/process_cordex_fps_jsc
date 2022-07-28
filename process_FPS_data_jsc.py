@@ -176,6 +176,10 @@ def main():
                 for rcm in rcms:
                     logger.info('RCM is %s', rcm)
                     for v_ind, varn in enumerate(VARIABLES):
+                        outpath_varn = f'{OUTPUT_PATH}/{varn}'
+                        if not os.access(outpath_varn, os.F_OK):
+                            os.makedirs(outpath_varn)
+
                         file_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}'
                                      f'/{ensemble}/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc')
                         derived = False
@@ -246,9 +250,7 @@ def main():
                                                 f'{ensemble}_{rcm}_{nesting}_'
                                                 f'{new_time_res}_{time_range}')
 
-
-                            logger.info('Filename is %s', filename)
-                            ofile = f'{OUTPUT_PATH}/{filename}.nc'
+                            ofile = f'{outpath_varn}/{filename}.nc'
 
                             # Check if ofile already exists, create if does not exist
                             # yet or OVERWRITE=True
@@ -292,7 +294,7 @@ def main():
                                     # All we need to do is cut the SUBDOMAIN
                                     cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                      input=ifile, output=ofile)
-
+                                logger.info('File written to %s', ofile)
 
 if __name__ == '__main__':
     main()
