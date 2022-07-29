@@ -224,7 +224,7 @@ def main():
                         # cdo showdate returns list with one string incl. all dates
                         try:
                             dates = cdo.showdate(input=ifile)[0]
-                        except PermissionError:
+                        except:
                             continue
                         firstdate = dates.split(' ')[0]
                         firstdate_str = ''.join(firstdate.split('-'))
