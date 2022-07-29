@@ -174,6 +174,8 @@ def main():
 
             # loop over rcms
             for rcm in rcms:
+                if rcm == 'BCCR-WRF381BF' or rcm == 'BCCR-WRF381CF':
+                    continue
                 logger.info('RCM is %s', rcm)
                 for v_ind, varn in enumerate(VARIABLES):
                     outpath_varn = f'{OUTPUT_PATH}/{varn}'
