@@ -222,7 +222,10 @@ def main():
 
                         # find time range included in file for output filename
                         # cdo showdate returns list with one string incl. all dates
-                        dates = cdo.showdate(input=ifile)[0]
+                        try:
+                            dates = cdo.showdate(input=ifile)[0]
+                        except PermissionError:
+                            continue
                         firstdate = dates.split(' ')[0]
                         firstdate_str = ''.join(firstdate.split('-'))
                         lastdate = dates.split(' ')[-1]
@@ -295,6 +298,8 @@ def main():
                                 cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
                                                  input=ifile, output=ofile)
                             logger.info('File written to %s', ofile)
+
+    logger.info('Success! All files found were successfully processed.')
 
 if __name__ == '__main__':
     main()
