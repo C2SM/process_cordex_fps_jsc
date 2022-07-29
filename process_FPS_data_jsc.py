@@ -174,7 +174,7 @@ def main():
 
             # loop over rcms
             for rcm in rcms:
-                if rcm == 'BCCR-WRF381BF' or rcm == 'BCCR-WRF381CF':
+                if rcm in ('BCCR-WRF381BF', 'BCCR-WRF381CF'):
                     continue
                 logger.info('RCM is %s', rcm)
                 for v_ind, varn in enumerate(VARIABLES):
@@ -225,8 +225,8 @@ def main():
                             logger.error(errmsg)
                             continue
                         except Exception:
-                            errmsg = (f'Unknown error on file {ifile} using ')
-                                     (f' cdo.showdate, continuing.')
+                            errmsg = (f'Unknown error on file {ifile} using '
+                                      f' cdo.showdate, continuing.')
                             logger.error(errmsg)
                             continue
                         firstdate = dates.split(' ')[0]
