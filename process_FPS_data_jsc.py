@@ -215,22 +215,29 @@ def main():
                     logger.info('%s files found, start processing:', len(filelist))
                     # Loop over all files found in file_path
                     for ifile in filelist:
-                        split_ifile = ifile.split('/')
-
-                        # find nesting info from path for output filename
-                        nesting = split_ifile[12]
-
                         # find time range included in file for output filename
                         # cdo showdate returns list with one string incl. all dates
+                        # also checks if file can be read by cdo
                         try:
                             dates = cdo.showdate(input=ifile)[0]
-                        except:
+                        except PermissionError:
+                            errmsg = f'PermissionError for file {ifile}, continuing.'
+                            logger.error(errmsg)
+                            continue
+                        except Exception:
+                            errmsg = (f'Unknown error on file {ifile} using ')
+                                     (f' cdo.showdate, continuing.')
+                            logger.error(errmsg)
                             continue
                         firstdate = dates.split(' ')[0]
                         firstdate_str = ''.join(firstdate.split('-'))
                         lastdate = dates.split(' ')[-1]
                         lastdate_str = ''.join(lastdate.split('-'))
                         time_range = f'{firstdate_str}-{lastdate_str}'
+
+                        # find nesting info from path for output filename
+                        split_ifile = ifile.split('/')
+                        nesting = split_ifile[12]
 
                         filename = (f'{varn}_{SUBDOMAIN}_{gcm}_{scen}_'
                                     f'{ensemble}_{rcm}_{nesting}_'
