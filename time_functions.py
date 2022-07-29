@@ -89,6 +89,7 @@ def calc_1h_to_3h(varn, infile, threehour_file):
                 logger.error(ds_in)
 
         if (var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'time:point' or
             var.attrs['cell_methods'] == 'lev: mean'):
             ds_3h = ds_in.resample(time='3H').asfreq()
         elif var.attrs['cell_methods'] == 'time: mean':
@@ -139,6 +140,7 @@ def calc_1h_to_6h(varn, infile, sixhour_file):
                 logger.error(ds_in)
 
         if (var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'time:point' or
             var.attrs['cell_methods'] == 'lev: mean'):
             ds_6h = ds_in.resample(time='6H').asfreq()
         elif var.attrs['cell_methods'] == 'time: mean':
@@ -187,6 +189,7 @@ def calc_3h_to_6h(varn, infile, sixhour_file):
                 logger.error(ds_in)
 
         if (var.attrs['cell_methods'] == 'time: point' or
+            var.attrs['cell_methods'] == 'time:point' or
             var.attrs['cell_methods'] == 'lev: mean'):
             ds_6h = ds_in.resample(time='6H').asfreq()
         elif var.attrs['cell_methods'] == 'time: mean':
