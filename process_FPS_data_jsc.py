@@ -268,45 +268,46 @@ def main():
                         if os.path.isfile(ofile) and not OVERWRITE:
                             logger.info('File %s already exists.', ofile)
                         else:
-                            if derived:
-                                if (
-                                    (TIME_RES[v_ind] == '1hr' and
-                                    new_time_res in ['3hr', '6hr', 'day']) or
-                                    (TIME_RES[v_ind] == '6hr' and
-                                    new_time_res == 'day')
-                                ):
-                                    # process native frequency, do not increase frequency
-                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
-                                                     input=ifile, output=ofile)
+                            if derived and not (
+                            (TIME_RES[v_ind] == '1hr' and
+                            new_time_res in ['3hr', '6hr', 'day']) or
+                            (TIME_RES[v_ind] == '6hr' and
+                            new_time_res == 'day')
+                            ):
+
+                                cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
+                                                 input=ifile, output=tmp_file)
+                                # Variable needs to be derived for the
+                                # required time frequency
+                                if TIME_RES[v_ind] == 'day':
+                                    tf.calc_to_day(varn, tmp_file, ofile)
+                                elif TIME_RES[v_ind] == '6hr' and new_time_res == '1hr':
+                                    tf.calc_1h_to_6h(varn, tmp_file, ofile)
+                                elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
+                                    tf.calc_1h_to_3h(varn, tmp_file, ofile)
+                                elif TIME_RES[v_ind] == '6hr' and new_time_res == '3hr':
+                                    tf.calc_3h_to_6h(varn, tmp_file, ofile)
                                 else:
-                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
-                                                     input=ifile, output=tmp_file)
-                                    # Variable needs to be derived for the
-                                    # required time frequency
-                                    if TIME_RES[v_ind] == 'day':
-                                        tf.calc_to_day(varn, tmp_file, ofile)
-                                    elif TIME_RES[v_ind] == '6hr' and new_time_res == '1hr':
-                                        tf.calc_1h_to_6h(varn, tmp_file, ofile)
-                                    elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
-                                        tf.calc_1h_to_3h(varn, tmp_file, ofile)
-                                    elif TIME_RES[v_ind] == '6hr' and new_time_res == '3hr':
-                                        tf.calc_3h_to_6h(varn, tmp_file, ofile)
-                                    else:
-                                        errormsg = ('Not implemented error!'
-                                                    ' TIME_RES[v_ind]: %s,'
-                                                    ' new_time_res: %s',
-                                                    TIME_RES[v_ind],
-                                                    new_time_res)
-                                        logger.error(errormsg)
+                                    errormsg = ('Not implemented error!'
+                                                ' TIME_RES[v_ind]: %s,'
+                                                ' new_time_res: %s',
+                                                TIME_RES[v_ind],
+                                                new_time_res)
+                                    logger.error(errormsg)
                                 # clean up WORKDIR
                                 os.system(f'rm {WORKDIR}/*')
                             else:
                                 # All we need to do is cut the SUBDOMAIN
-                                cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
-                                                 input=ifile, output=ofile)
-                            logger.info('File written to %s', ofile)
+                                try:
+                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
+                                                     input=ifile, output=ofile)
+                                    logger.info('File written to %s', ofile)
+                                except:
+                                    logger.error('File %s not written', ofile)
+                                    logger.error('Something wrong with input file')
+                                    continue
 
-    logger.info('Success! All files found were successfully processed.')
+    logger.info('All files found that could be processed were processed.')
 
 if __name__ == '__main__':
     main()
