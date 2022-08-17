@@ -25,6 +25,9 @@ import glob
 from cdo import *
 cdo = Cdo()
 
+import filefinder
+from filefinder.filters import priority_filter
+
 import time_functions as tf
 
 # Define logfile and logger
@@ -131,6 +134,20 @@ def main():
                     'please check those lists!')
         logger.error(errormsg)
         os.exit()
+
+    for variable in VARIABLES:
+
+        path_pattern = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/'
+        file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc'
+
+        ff = filefinder.FileFinder(path_pattern, file_pattern)
+        files = ff.find_paths()
+        files_prioritized = priority_filter(files, "t_freq", TRES_VALID)
+
+        for path, meta in files_prioritized:
+            print(f"{path = }")
+            print(f"{meta = }")
+            print()
 
     # Find all institutes, models etc.
     institutes = get_folders(f'{INPUT_PATH}/{DOMAIN}/')
