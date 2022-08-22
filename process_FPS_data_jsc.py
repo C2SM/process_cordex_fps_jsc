@@ -184,7 +184,7 @@ def main():
 
                 metainfo = (f'{meta["gcm"]}_{meta["scenario"]}_'
                             f'{meta["ensemble"]}_{meta["rcm"]}_'
-                            f'{meta["nesting"]}_')
+                            f'{meta["nesting"]}')
 
                 filename = (f'{varn}_{SUBDOMAIN}_{metainfo}_'
                             f'{TIME_RES[v_ind]}_{time_range}')
