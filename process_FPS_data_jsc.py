@@ -53,10 +53,10 @@ SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
 #VARIABLES = ["tas", "pr", "hus850", "psl", "zg500", "zg850",
 #             "tasmax", "tasmin", "snd", "orog"]
-VARIABLES = ['pr']
+VARIABLES = ['zg500']
 # time resolutions we want for each variable
 #TIME_RES = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
-TIME_RES = ['1hr']
+TIME_RES = ['6hr']
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['1hr', '3hr', '6hr', 'day']
 
