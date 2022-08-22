@@ -214,10 +214,10 @@ def main():
                 else:
                     if varnamech:
                         corrnamefile=(f'{WORKDIR}/{varn}_correct_{metainfo}_'
-                                      f'{TIME_RES[v_ind]]}_{time_range}.nc')
+                                      f'{TIME_RES[v_ind]}_{time_range}.nc')
                         cdo.chname(varname_file, varn, input=ifile, output=corrnamefile)
                         ifile=corrnamefile
-                        logger.warning('varname corrected in file %s!' %ifile)
+                        logger.warning('varname corrected in file %s!', ifile)
                     try:
                         process_file(meta=meta, ifile=ifile, ofile=ofile,
                                      time_res_in=TIME_RES[v_ind],
