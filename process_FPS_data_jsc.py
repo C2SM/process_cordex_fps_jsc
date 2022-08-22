@@ -164,10 +164,12 @@ def main():
             for ifile in filelist:
                 # Test if file can be read by cdo and if variable name in file is correct:
                 try:
-                    varname_file = cdo.showname(input=ifile)
+                    varname_file = cdo.showname(input=ifile)[0]
                     if varname_file != varn:
-                        logger.error('Variable name in file is not equal to %s!', varn)
-                        continue
+                        logger.warning('Variable name %s in file is not equal to %s!', varname_file, varn)
+                        varnamech=True
+                    else:
+                        varnamech=False
                 except PermissionError:
                     errmsg = f'PermissionError for file {ifile}, continuing.'
                     logger.error(errmsg)
@@ -210,6 +212,12 @@ def main():
                 if os.path.isfile(ofile) and not OVERWRITE:
                     logger.info('File %s already exists.', ofile)
                 else:
+                    if varnamech:
+                        corrnamefile=f'{WORKDIR}/{varn}_correct_{metainfo}_'
+                                     f'{TIME_RES[v_ind]]}_{time_range}.nc'
+                        cdo.chname(varname_file, varn, input=ifile, output=corrnamefile)
+                        ifile=corrnamefile
+                        logger.warning('varname corrected in file %s!' %ifile)
                     try:
                         process_file(meta=meta, ifile=ifile, ofile=ofile,
                                      time_res_in=TIME_RES[v_ind],
