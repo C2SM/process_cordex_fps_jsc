@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 ####################
 ### Define input ###
 ####################
-INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/'
+INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
