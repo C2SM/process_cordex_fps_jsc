@@ -213,8 +213,8 @@ def main():
                     logger.info('File %s already exists.', ofile)
                 else:
                     if varnamech:
-                        corrnamefile=f'{WORKDIR}/{varn}_correct_{metainfo}_'
-                                     f'{TIME_RES[v_ind]]}_{time_range}.nc'
+                        corrnamefile=(f'{WORKDIR}/{varn}_correct_{metainfo}_'
+                                      f'{TIME_RES[v_ind]]}_{time_range}.nc')
                         cdo.chname(varname_file, varn, input=ifile, output=corrnamefile)
                         ifile=corrnamefile
                         logger.warning('varname corrected in file %s!' %ifile)
