@@ -11,24 +11,25 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
  * process variables:
  Some of the variables might exist in different frequency
     - 1hr: pr, tas
-    - 3hr: hus850
-    - 6hr: psl, zg500, zg850
+    - 6hr: psl, hus850, zg500, zg850
     - day: tasmax, tasmin, snd
     - fx: orog
  * cut DOMAIN to allAlps region
 
 '''
-import time
-import os
-import logging
 import glob
-from cdo import *
-cdo = Cdo()
+import logging
+import os
+import time
+
+from cdo import Cdo
 
 import filefinder
 from filefinder.filters import priority_filter
 
 import time_functions as tf
+
+cdo = Cdo()
 
 # Define logfile and logger
 seconds = time.time()
@@ -148,9 +149,6 @@ def main():
         files_prioritized = priority_filter(files, "t_freq", TRES_VALID)
 
         for path, meta in files_prioritized:
-            print(f"{path} = ")
-            print(f"{meta} = ")
-            print()
 
             if meta['rcm'] in ('BCCR-WRF381BF', 'BCCR-WRF381CF'):
                 continue
@@ -166,7 +164,8 @@ def main():
                 try:
                     varname_file = cdo.showname(input=ifile)[0]
                     if varname_file != varn:
-                        logger.warning('Variable name %s in file is not equal to %s!', varname_file, varn)
+                        logger.warning('Variable name %s in file is not equal to %s!',
+                                       varname_file, varn)
                         varnamech=True
                     else:
                         varnamech=False
