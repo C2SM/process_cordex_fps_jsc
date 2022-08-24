@@ -11,21 +11,25 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
  * process variables:
  Some of the variables might exist in different frequency
     - 1hr: pr, tas
-    - 3hr: hus850
-    - 6hr: psl, zg500, zg850
+    - 6hr: psl, hus850, zg500, zg850
     - day: tasmax, tasmin, snd
     - fx: orog
  * cut DOMAIN to allAlps region
 
 '''
-import time
-import os
-import logging
 import glob
-from cdo import *
-cdo = Cdo()
+import logging
+import os
+import time
+
+from cdo import Cdo
+
+import filefinder
+from filefinder.filters import priority_filter
 
 import time_functions as tf
+
+cdo = Cdo()
 
 # Define logfile and logger
 seconds = time.time()
@@ -43,14 +47,13 @@ logger = logging.getLogger(__name__)
 ####################
 ### Define input ###
 ####################
-INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output'
+INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3'
 
-DOMAIN = 'ALP-3'
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
 #VARIABLES = ["tas", "pr", "hus850", "psl", "zg500", "zg850",
 #             "tasmax", "tasmin", "snd", "orog"]
-VARIABLES = ['psl']
+VARIABLES = ['zg500']
 # time resolutions we want for each variable
 #TIME_RES = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
 TIME_RES = ['6hr']
@@ -58,60 +61,61 @@ TIME_RES = ['6hr']
 TRES_VALID = ['1hr', '3hr', '6hr', 'day']
 
 SUBDOMAIN = 'allAlps'
-LON1 = 5.3
-LON2 = 16.3
-LAT1 = 43.3
-LAT2 = 48.5
+DOMAIN_SPECS='5.3,16.3,43.3,48.5'
 
 OVERWRITE = False # Flag to trigger overwriting of Files
 OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}'
 WORKDIR = '/home/rlorenz/fpscpcm/tmp/rlorenz/data/work'
 
 
-def get_folders(path):
+
+def find_dates_in_file(input_file):
     '''
-    Get all folder names in path
-
-    Parameters
-    ----------
-    path: string
-        path to look for folder names
-
-    Returns
-    -------
-    res: list
-        list with all folder names
+    find time range included in file for output filename
+    cdo showdate returns list with one string incl. all dates
     '''
-    res = []
-    for folder in os.listdir(path):
-        if os.path.isdir(os.path.join(path, folder)):
-            res.append(folder)
+    dates = cdo.showdate(input=input_file)[0]
 
-    return res
+    firstdate = dates.split(' ')[0]
+    firstdate_str = ''.join(firstdate.split('-'))
+    lastdate = dates.split(' ')[-1]
+    lastdate_str = ''.join(lastdate.split('-'))
+    return f'{firstdate_str}-{lastdate_str}'
 
-def remove_item_from_list(orig_list, item):
+
+def process_file(meta, ifile, ofile, time_res_in, time_range, derived=False):
     '''
-    Remove a known item from a list
-
-    Parameters
-    ----------
-    orig_list: list
-        original list
-    item: string
-        item to be removed
-
-    Returns
-    -------
-    orig_list: list
-        list without item
+    Process input file into smaller domain
+    Resample if necessary (derived=True)
     '''
-    try:
-        orig_list.remove(item)
-    except ValueError:
-        infomsg = ('No %s folder to remove from list.', item)
-        logger.info(infomsg)
+    if derived:
+        tmp_file = (f'{WORKDIR}/{meta["variable"]}_{SUBDOMAIN}_{meta["gcm"]}_'
+                    f'{meta["scenario"]}_{meta["ensemble"]}_{meta["rcm"]}_'
+                    f'{meta["nesting"]}_{meta["t_freq"]}_{time_range}.nc')
+        cdo.sellonlatbox(f'{DOMAIN_SPECS}',
+                         input=ifile, output=tmp_file)
+        # Variable needs to be derived for the
+        # required time frequency
+        if time_res_in == 'day':
+            tf.calc_to_day(meta["variable"], tmp_file, ofile)
+        elif time_res_in == '6hr' and meta["t_freq"] == '1hr':
+            tf.calc_1h_to_6h(meta["variable"], tmp_file, ofile)
+        elif time_res_in == '3hr' and meta["t_freq"] == '1hr':
+            tf.calc_1h_to_3h(meta["variable"], tmp_file, ofile)
+        elif time_res_in == '6hr' and meta["t_freq"] == '3hr':
+            tf.calc_3h_to_6h(meta["variable"], tmp_file, ofile)
+        else:
+            errormsg = ('Not implemented error! TIME_RES[v_ind]: %s,'
+                        ' meta["t_freq"]: %s', time_res_in, meta["t_freq"])
+            logger.error(errormsg)
+        # clean up WORKDIR
+        os.system(f'rm {WORKDIR}/*')
+    else:
+        # All we need to do is cut the SUBDOMAIN
+        cdo.sellonlatbox(f'{DOMAIN_SPECS}', input=ifile, output=ofile)
+    logger.info('File written to %s', ofile)
 
-    return orig_list
+
 
 def main():
     '''
@@ -132,180 +136,96 @@ def main():
         logger.error(errormsg)
         os.exit()
 
-    # Find all institutes, models etc.
-    institutes = get_folders(f'{INPUT_PATH}/{DOMAIN}/')
-    # remove ETHz from list because we only need ETHZ-2
-    institutes.remove('ETHZ')
-    logger.info('Institute folders found are: %s', institutes)
+    for v_ind, varn in enumerate(VARIABLES):
+        outpath_varn = f'{OUTPUT_PATH}/{varn}'
+        if not os.access(outpath_varn, os.F_OK):
+            os.makedirs(outpath_varn)
 
-    for inst in institutes:
-        # Loop over variables, SCENARIOS, models
-        for scen in SCENARIOS:
-            if scen == 'evaluation':
-                gcm = 'ECMWF-ERAINT'
-            else:
-                gcms = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}')
-                logger.info('gcms list is %s', gcms)
-                remove_item_from_list(gcms, 'ECMWF-ERAINT')
+        path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
+        file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc'
 
-                # check if one gcm name found:
-                if len(gcms) > 1:
-                    errormsg = ('More than one gcm folder found! %s', gcms)
-                    logger.error(errormsg)
-                    exit()
-                if len(gcms) == 1:
-                    logger.info('One gcm folder found: %s', gcms[0])
-                else:
-                    logger.warning('No gcm folder found, continuing')
-                    continue
-                gcm = gcms[0]
+        ff = filefinder.FileFinder(path_pattern, file_pattern)
+        files = ff.find_paths(variable=varn)
+        files_prioritized = priority_filter(files, "t_freq", TRES_VALID)
 
-            # find ensemble
-            try:
-                ensembles = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}')
-            except FileNotFoundError:
-                warnmsg = ('No folder found for %s', scen)
-                logger.warning(warnmsg)
+        for path, meta in files_prioritized:
+
+            if meta['rcm'] in ('BCCR-WRF381BF', 'BCCR-WRF381CF'):
                 continue
-            remove_item_from_list(ensembles, 'r0i0p0')
-            ensemble = ensembles[0]
-            # find rcm names
-            rcms = get_folders(f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}/{ensemble}')
 
-            # loop over rcms
-            for rcm in rcms:
-                if rcm in ('BCCR-WRF381BF', 'BCCR-WRF381CF'):
+            filelist = sorted(glob.glob(path))
+
+            derived = bool(TIME_RES[v_ind] != meta['t_freq'])
+
+            logger.info('%s files found, start processing:', len(filelist))
+            # Loop over all files found in path
+            for ifile in filelist:
+                # Test if file can be read by cdo and if variable name in file is correct:
+                try:
+                    varname_file = cdo.showname(input=ifile)[0]
+                    if varname_file != varn:
+                        logger.warning('Variable name %s in file is not equal to %s!',
+                                       varname_file, varn)
+                        varnamech=True
+                    else:
+                        varnamech=False
+                except PermissionError:
+                    errmsg = f'PermissionError for file {ifile}, continuing.'
+                    logger.error(errmsg)
                     continue
-                logger.info('RCM is %s', rcm)
-                for v_ind, varn in enumerate(VARIABLES):
-                    outpath_varn = f'{OUTPUT_PATH}/{varn}'
-                    if not os.access(outpath_varn, os.F_OK):
-                        os.makedirs(outpath_varn)
+                except Exception:
+                    errmsg = (f'Unknown error on file {ifile} using '
+                              f' cdo.showname, continuing.')
+                    logger.error(errmsg)
+                    continue
 
-                    file_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/{scen}'
-                                 f'/{ensemble}/{rcm}/*/{TIME_RES[v_ind]}/{varn}/*.nc')
-                    derived = False
-                    # Find all files matching pattern file_path
-                    filelist = glob.glob(file_path)
-                    if len(filelist) == 0:
-                        warnmsg = ('Filelist is empty, no files for path %s,'
-                                   ' keep looking in other frequencies.',
-                                   file_path)
-                        logger.warning(warnmsg)
-                        # Variables can be in different frequencies than the
-                        # required ones, check other folders
-                        tres_valid_rm = [n for n in TRES_VALID if n != TIME_RES[v_ind]]
-                        new_time_res = None
-                        for new_time_res in tres_valid_rm:
-                            check_path = (f'{INPUT_PATH}/{DOMAIN}/{inst}/{gcm}/'
-                                          f'{scen}/{ensemble}/{rcm}/*/{new_time_res}/'
-                                          f'{varn}/*.nc')
-                            filelist = glob.glob(check_path)
-                            if len(filelist) != 0:
-                                infomsg=('Variable %s found in frequency %s',
-                                         varn, new_time_res)
-                                logger.info(infomsg)
-                                derived = True
-                                break
-                        if len(filelist) == 0:
-                            warnmsg = ('No files found for %s', file_path)
-                            logger.warning(warnmsg)
-                            continue
+                time_range = find_dates_in_file(ifile)
 
-                    logger.info('%s files found, start processing:', len(filelist))
-                    # Loop over all files found in file_path
-                    for ifile in filelist:
-                        # find time range included in file for output filename
-                        # cdo showdate returns list with one string incl. all dates
-                        # also checks if file can be read by cdo
-                        try:
-                            dates = cdo.showdate(input=ifile)[0]
-                        except PermissionError:
-                            errmsg = f'PermissionError for file {ifile}, continuing.'
-                            logger.error(errmsg)
-                            continue
-                        except Exception:
-                            errmsg = (f'Unknown error on file {ifile} using '
-                                      f' cdo.showdate, continuing.')
-                            logger.error(errmsg)
-                            continue
-                        firstdate = dates.split(' ')[0]
-                        firstdate_str = ''.join(firstdate.split('-'))
-                        lastdate = dates.split(' ')[-1]
-                        lastdate_str = ''.join(lastdate.split('-'))
-                        time_range = f'{firstdate_str}-{lastdate_str}'
+                metainfo = (f'{meta["gcm"]}_{meta["scenario"]}_'
+                            f'{meta["ensemble"]}_{meta["rcm"]}_'
+                            f'{meta["nesting"]}')
 
-                        # find nesting info from path for output filename
-                        split_ifile = ifile.split('/')
-                        nesting = split_ifile[12]
+                filename = (f'{varn}_{SUBDOMAIN}_{metainfo}_'
+                            f'{TIME_RES[v_ind]}_{time_range}')
 
-                        filename = (f'{varn}_{SUBDOMAIN}_{gcm}_{scen}_'
-                                    f'{ensemble}_{rcm}_{nesting}_'
-                                    f'{TIME_RES[v_ind]}_{time_range}')
-                        if derived:
-                            tmp_file = (f'{WORKDIR}/{varn}_{SUBDOMAIN}_{gcm}'
-                                        f'_{scen}_{ensemble}_{rcm}_{nesting}'
-                                        f'_{new_time_res}_{time_range}.nc')
-                            if (
-                                TIME_RES[v_ind] == '1hr' and
-                                new_time_res in ['3hr', '6hr', 'day'] or
-                                (TIME_RES[v_ind] == '6hr' and
-                                new_time_res == 'day')
-                            ):
-                                infomsg=(f'TIME_RES[v_ind]: {TIME_RES[v_ind]}'
-                                         f' and new_time_res: {new_time_res}.'
-                                         f'We do not upsample, native time'
-                                         f' frequency will be processed!')
-                                logger.info(infomsg)
-                                filename = (f'{varn}_{SUBDOMAIN}_{gcm}_{scen}_'
-                                            f'{ensemble}_{rcm}_{nesting}_'
-                                            f'{new_time_res}_{time_range}')
 
-                        ofile = f'{outpath_varn}/{filename}.nc'
+                if derived and (
+                    TIME_RES[v_ind] == '1hr' and
+                    meta['t_freq'] in ['3hr', '6hr', 'day'] or
+                    (TIME_RES[v_ind] == '6hr' and
+                    meta['t_freq'] == 'day')
+                ):
+                    infomsg=(f'TIME_RES[v_ind]: {TIME_RES[v_ind]}'
+                             f' and meta["t_freq"]: {meta["t_freq"]}.'
+                             f'We do not upsample, native time'
+                             f' frequency will be processed!')
+                    logger.info(infomsg)
+                    filename = (f'{varn}_{SUBDOMAIN}_{metainfo}_'
+                                f'{meta["t_freq"]}_{time_range}')
+                    derived=False
 
-                        # Check if ofile already exists, create if does not exist
-                        # yet or OVERWRITE=True
-                        if os.path.isfile(ofile) and not OVERWRITE:
-                            logger.info('File %s already exists.', ofile)
-                        else:
-                            if derived and not (
-                            (TIME_RES[v_ind] == '1hr' and
-                            new_time_res in ['3hr', '6hr', 'day']) or
-                            (TIME_RES[v_ind] == '6hr' and
-                            new_time_res == 'day')
-                            ):
+                ofile = f'{outpath_varn}/{filename}.nc'
 
-                                cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
-                                                 input=ifile, output=tmp_file)
-                                # Variable needs to be derived for the
-                                # required time frequency
-                                if TIME_RES[v_ind] == 'day':
-                                    tf.calc_to_day(varn, tmp_file, ofile)
-                                elif TIME_RES[v_ind] == '6hr' and new_time_res == '1hr':
-                                    tf.calc_1h_to_6h(varn, tmp_file, ofile)
-                                elif TIME_RES[v_ind] == '3hr' and new_time_res == '1hr':
-                                    tf.calc_1h_to_3h(varn, tmp_file, ofile)
-                                elif TIME_RES[v_ind] == '6hr' and new_time_res == '3hr':
-                                    tf.calc_3h_to_6h(varn, tmp_file, ofile)
-                                else:
-                                    errormsg = ('Not implemented error!'
-                                                ' TIME_RES[v_ind]: %s,'
-                                                ' new_time_res: %s',
-                                                TIME_RES[v_ind],
-                                                new_time_res)
-                                    logger.error(errormsg)
-                                # clean up WORKDIR
-                                os.system(f'rm {WORKDIR}/*')
-                            else:
-                                # All we need to do is cut the SUBDOMAIN
-                                try:
-                                    cdo.sellonlatbox(f'{LON1},{LON2},{LAT1},{LAT2}',
-                                                     input=ifile, output=ofile)
-                                    logger.info('File written to %s', ofile)
-                                except:
-                                    logger.error('File %s not written', ofile)
-                                    logger.error('Something wrong with input file')
-                                    continue
+                # Check if ofile already exists, create if does not exist
+                # yet or OVERWRITE=True
+                if os.path.isfile(ofile) and not OVERWRITE:
+                    logger.info('File %s already exists.', ofile)
+                else:
+                    if varnamech:
+                        corrnamefile=(f'{WORKDIR}/{varn}_correct_{metainfo}_'
+                                      f'{TIME_RES[v_ind]}_{time_range}.nc')
+                        cdo.chname(f'"{varname_file}"', varn,
+                                   input=ifile, output=corrnamefile)
+                        ifile=corrnamefile
+                        logger.warning('varname corrected in file %s!', ifile)
+                    try:
+                        process_file(meta=meta, ifile=ifile, ofile=ofile,
+                                     time_res_in=TIME_RES[v_ind],
+                                     time_range=time_range, derived=derived)
+                    except:
+                        logger.error('File %s not written', ofile)
+                        logger.error('Something wrong with input file')
+                    continue
 
     logger.info('All files found that could be processed were processed.')
 
