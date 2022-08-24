@@ -214,7 +214,8 @@ def main():
                     if varnamech:
                         corrnamefile=(f'{WORKDIR}/{varn}_correct_{metainfo}_'
                                       f'{TIME_RES[v_ind]}_{time_range}.nc')
-                        cdo.chname(varname_file, varn, input=ifile, output=corrnamefile)
+                        cdo.chname(f'"{varname_file}"', varn,
+                                   input=ifile, output=corrnamefile)
                         ifile=corrnamefile
                         logger.warning('varname corrected in file %s!', ifile)
                     try:
