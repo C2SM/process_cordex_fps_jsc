@@ -10,11 +10,12 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
  steps:
  * process variables:
  Some of the variables might exist in different frequency
-    - 1hr: pr, tas
-    - 6hr: psl, hus850, zg500, zg850
-    - day: tasmax, tasmin, snd
     - fx: orog
- * cut DOMAIN to allAlps region
+    - 1hr: pr, tas
+    - 6hr: evspsbl/ hfls, rlds, rlus, rsds, rsus, hurs, prsn,
+           psl, hus850, zg500, zg850
+    - day: tasmax, tasmin, snw (snd)
+
 
 '''
 import glob
@@ -47,24 +48,19 @@ logger = logging.getLogger(__name__)
 ####################
 ### Define input ###
 ####################
-INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3'
+DOMAIN = 'ALP-3'
+INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
-#VARIABLES = ["tas", "pr", "hus850", "psl", "zg500", "zg850",
-#             "tasmax", "tasmin", "snd", "orog"]
-VARIABLES = ['zg500']
-# time resolutions we want for each variable
-#TIME_RES = ["1hr", "1hr", "6hr", "6hr", "6hr", "6hr", "day", "day", "day", "fx"]
-TIME_RES = ['6hr']
+VARIABLES = ['pr']
+TIME_RES = ['1hr']
+
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['1hr', '3hr', '6hr', 'day']
 
-SUBDOMAIN = 'allAlps'
-DOMAIN_SPECS='5.3,16.3,43.3,48.5'
-
 OVERWRITE = False # Flag to trigger overwriting of Files
-OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{SUBDOMAIN}'
+OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{DOMAIN}'
 WORKDIR = '/home/rlorenz/fpscpcm/tmp/rlorenz/data/work'
 
 
@@ -89,31 +85,28 @@ def process_file(meta, ifile, ofile, time_res_in, time_range, derived=False):
     Resample if necessary (derived=True)
     '''
     if derived:
-        tmp_file = (f'{WORKDIR}/{meta["variable"]}_{SUBDOMAIN}_{meta["gcm"]}_'
-                    f'{meta["scenario"]}_{meta["ensemble"]}_{meta["rcm"]}_'
-                    f'{meta["nesting"]}_{meta["t_freq"]}_{time_range}.nc')
-        cdo.sellonlatbox(f'{DOMAIN_SPECS}',
-                         input=ifile, output=tmp_file)
         # Variable needs to be derived for the
         # required time frequency
         if time_res_in == 'day':
-            tf.calc_to_day(meta["variable"], tmp_file, ofile)
+            tf.calc_to_day(meta["variable"], ifile, ofile)
         elif time_res_in == '6hr' and meta["t_freq"] == '1hr':
-            tf.calc_1h_to_6h(meta["variable"], tmp_file, ofile)
+            tf.calc_1h_to_6h(meta["variable"], ifile, ofile)
         elif time_res_in == '3hr' and meta["t_freq"] == '1hr':
-            tf.calc_1h_to_3h(meta["variable"], tmp_file, ofile)
+            tf.calc_1h_to_3h(meta["variable"], ifile, ofile)
         elif time_res_in == '6hr' and meta["t_freq"] == '3hr':
-            tf.calc_3h_to_6h(meta["variable"], tmp_file, ofile)
+            tf.calc_3h_to_6h(meta["variable"], ifile, ofile)
         else:
             errormsg = ('Not implemented error! TIME_RES[v_ind]: %s,'
                         ' meta["t_freq"]: %s', time_res_in, meta["t_freq"])
             logger.error(errormsg)
-        # clean up WORKDIR
-        os.system(f'rm {WORKDIR}/*')
+        logger.info('File written to %s', ofile)
+    elif varnamech:
+        # All we need to do is move/rename the file
+        os.rename('%s' %ifile, '%s' %ofile)
     else:
-        # All we need to do is cut the SUBDOMAIN
-        cdo.sellonlatbox(f'{DOMAIN_SPECS}', input=ifile, output=ofile)
-    logger.info('File written to %s', ofile)
+        # All we need to do is link file
+        os.symlink('%s' %ifile, '%s' %ofile)
+        logger.info('File linked to %s', ofile)
 
 
 
