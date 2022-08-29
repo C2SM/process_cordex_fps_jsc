@@ -46,7 +46,8 @@ def find_files(path_pattern, file_pattern, varn, v_ind):
     files = ff.find_paths(variable=varn)
 
     logger.info('All files found are %s.', files)
-    for path in files:
+    for path, meta in files:
+        logger.info(meta)
         filelist = sorted(glob.glob(path))
         for ifile in filelist:
             # check if file:
