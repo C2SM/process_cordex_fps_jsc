@@ -9,15 +9,21 @@ Purpose: find all files for CORDEX-FPSCONV data
 
 
 '''
-import time
 import os
 import logging
 import glob
-from cdo import *
-cdo = Cdo()
+
+from cdo import Cdo
 
 import filefinder
 from filefinder.filters import priority_filter
+
+cdo = Cdo()
+
+### Define logger
+logging.basicConfig(format='%(levelname)s %(asctime)s: %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 ####################
 ### Define input ###
@@ -31,23 +37,29 @@ VARIABLES = ['orog', 'lsm', 'sftls']
 
 TIME_RES = ['fx', 'fx', 'fx']
 
+
 def find_files(path_pattern, file_pattern, varn, v_ind):
+    '''
+    Find files to rsync using filefinder class
+    '''
     ff = filefinder.FileFinder(path_pattern, file_pattern)
     files = ff.find_paths(variable=varn)
 
     logger.info('All files found are %s.', files)
-    for path, meta in files:
+    for path in files:
         filelist = sorted(glob.glob(path))
         for ifile in filelist:
             # check if file:
             if os.path.isfile(ifile):
-                os.system(f"rsync -av {ifile} daint:/store/c2sm/c2sme/CH202X/CORDEX-FPSCONV/{DOMAIN}/{TIME_RES[v_ind]}/{varn}/")
+                os.system(f'rsync -av {ifile} '
+                          f'daint:/store/c2sm/c2sme/CH202X/CORDEX-FPSCONV/'
+                          f'{DOMAIN}/{TIME_RES[v_ind]}/{varn}/')
             else:
                 logger.warning('Not file but %s found', ifile)
 
 def main():
     '''
-    Find files and rsync to CSCS
+    Find files based on different path patterns and rsync to CSCS
     '''
     for v_ind, varn in enumerate(VARIABLES):
         file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}*.nc'
