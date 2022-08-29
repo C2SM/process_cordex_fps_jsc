@@ -27,26 +27,42 @@ INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output'
 DOMAIN = 'ALP-3'
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
-VARIABLES = ['pr', "orog"]
+VARIABLES = ['orog', 'lsm', 'sftls']
 
-TIME_RES = ['1hr', "fx"]
-TRES_VALID = ['1hr', '3hr', '6hr', 'day']
+TIME_RES = ['fx', 'fx', 'fx']
+
+def find_files(path_pattern, file_pattern, varn, v_ind):
+    ff = filefinder.FileFinder(path_pattern, file_pattern)
+    files = ff.find_paths(variable=varn)
+
+    logger.info('All files found are %s.', files)
+    for path, meta in files:
+        filelist = sorted(glob.glob(path))
+        for ifile in filelist:
+            # check if file:
+            if os.path.isfile(ifile):
+                os.system(f"rsync -av {ifile} daint:/store/c2sm/c2sme/CH202X/CORDEX-FPSCONV/{DOMAIN}/{TIME_RES[v_ind]}/{varn}/")
+            else:
+                logger.warning('Not file but %s found', ifile)
 
 def main():
     '''
-    Loop over all files found and cut to smaller domain,
-    resample if necessary
+    Find files and rsync to CSCS
     '''
-    for varn in VARIABLES:
+    for v_ind, varn in enumerate(VARIABLES):
+        file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}*.nc'
 
-        path_pattern = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/'
-        file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc'
+        path_pattern1 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/'
+        find_files(path_pattern1, file_pattern, varn, v_ind)
 
-        ff = filefinder.FileFinder(path_pattern, file_pattern)
-        files = ff.find_paths(variable=varn)
-        files_prioritized = priority_filter(files, "t_freq", TRES_VALID)
+        path_pattern2 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{t_freq}/'
+        find_files(path_pattern2, file_pattern, varn, v_ind)
 
-        logger.info('All files found are %s.', files_prioritized)
+        path_pattern3 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/'
+        find_files(path_pattern3, file_pattern, varn, v_ind)
+
+        path_pattern4 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/latest/'
+        find_files(path_pattern4, file_pattern, varn, v_ind)
 
 if __name__ == '__main__':
     main()
