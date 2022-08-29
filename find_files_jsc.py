@@ -38,12 +38,12 @@ VARIABLES = ['orog', 'lsm', 'sftls']
 TIME_RES = ['fx', 'fx', 'fx']
 
 
-def find_files(path_pattern, file_pattern, varn, v_ind):
+def find_files(path_pattern, file_pattern, varn, t_freq):
     '''
     Find files to rsync using filefinder class
     '''
     ff = filefinder.FileFinder(path_pattern, file_pattern)
-    files = ff.find_paths(variable=varn)
+    files = ff.find_paths(variable=varn, t_freq=t_freq)
 
     logger.info('All files found are %s.', files)
     for path, meta in files:
@@ -54,7 +54,7 @@ def find_files(path_pattern, file_pattern, varn, v_ind):
             if os.path.isfile(ifile):
                 os.system(f'rsync -av {ifile} '
                           f'daint:/store/c2sm/c2sme/CH202X/CORDEX-FPSCONV/'
-                          f'{DOMAIN}/{TIME_RES[v_ind]}/{varn}/')
+                          f'{DOMAIN}/{t_freq}/{varn}/')
             else:
                 logger.warning('Not file but %s found', ifile)
 
@@ -66,16 +66,19 @@ def main():
         file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}*.nc'
 
         path_pattern1 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/'
-        find_files(path_pattern1, file_pattern, varn, v_ind)
+        find_files(path_pattern1, file_pattern, varn, TIME_RES[v_ind])
 
         path_pattern2 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{t_freq}/'
-        find_files(path_pattern2, file_pattern, varn, v_ind)
+        find_files(path_pattern2, file_pattern, varn, TIME_RES[v_ind])
 
         path_pattern3 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/'
-        find_files(path_pattern3, file_pattern, varn, v_ind)
+        find_files(path_pattern3, file_pattern, varn, TIME_RES[v_ind])
 
         path_pattern4 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/latest/'
-        find_files(path_pattern4, file_pattern, varn, v_ind)
+        find_files(path_pattern4, file_pattern, varn, TIME_RES[v_ind])
+
+        path_pattern5 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/r0i0p0/'
+        find_files(path_pattern5, file_pattern, varn, TIME_RES[v_ind])
 
 if __name__ == '__main__':
     main()
