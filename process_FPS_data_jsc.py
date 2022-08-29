@@ -79,7 +79,8 @@ def find_dates_in_file(input_file):
     return f'{firstdate_str}-{lastdate_str}'
 
 
-def process_file(meta, ifile, ofile, time_res_in, time_range, derived=False):
+def process_file(meta, ifile, ofile, time_res_in,
+                 derived=False, varnamech=False):
     '''
     Process input file into smaller domain
     Resample if necessary (derived=True)
@@ -102,10 +103,11 @@ def process_file(meta, ifile, ofile, time_res_in, time_range, derived=False):
         logger.info('File written to %s', ofile)
     elif varnamech:
         # All we need to do is move/rename the file
-        os.rename('%s' %ifile, '%s' %ofile)
+        os.rename(f'{ifile}', f'{ofile}')
+        logger.info('File moved to %s', ofile)
     else:
         # All we need to do is link file
-        os.symlink('%s' %ifile, '%s' %ofile)
+        os.symlink(f'{ifile}', f'{ofile}')
         logger.info('File linked to %s', ofile)
 
 
@@ -178,7 +180,7 @@ def main():
                             f'{meta["ensemble"]}_{meta["rcm"]}_'
                             f'{meta["nesting"]}')
 
-                filename = (f'{varn}_{SUBDOMAIN}_{metainfo}_'
+                filename = (f'{varn}_{DOMAIN}_{metainfo}_'
                             f'{TIME_RES[v_ind]}_{time_range}')
 
 
@@ -193,7 +195,7 @@ def main():
                              f'We do not upsample, native time'
                              f' frequency will be processed!')
                     logger.info(infomsg)
-                    filename = (f'{varn}_{SUBDOMAIN}_{metainfo}_'
+                    filename = (f'{varn}_{DOMAIN}_{metainfo}_'
                                 f'{meta["t_freq"]}_{time_range}')
                     derived=False
 
