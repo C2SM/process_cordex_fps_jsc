@@ -82,8 +82,9 @@ def find_dates_in_file(input_file):
 def process_file(meta, ifile, ofile, time_res_in,
                  derived=False, varnamech=False):
     '''
-    Process input file into smaller domain
+    Process input file, change varname if necessary,
     Resample if necessary (derived=True)
+    create simlink if nothing needs to be done
     '''
     if derived:
         # Variable needs to be derived for the
@@ -216,7 +217,7 @@ def main():
                     try:
                         process_file(meta=meta, ifile=ifile, ofile=ofile,
                                      time_res_in=TIME_RES[v_ind],
-                                     time_range=time_range, derived=derived)
+                                     derived=derived, varnamech=varnamech)
                     except:
                         logger.error('File %s not written', ofile)
                         logger.error('Something wrong with input file')
