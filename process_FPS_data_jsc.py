@@ -132,7 +132,7 @@ def main():
         os.exit()
 
     for v_ind, varn in enumerate(VARIABLES):
-        outpath_varn = f'{OUTPUT_PATH}/{varn}'
+        outpath_varn = f'{OUTPUT_PATH}/{TIME_RES[v_ind]}/{varn}'
         if not os.access(outpath_varn, os.F_OK):
             os.makedirs(outpath_varn)
 
