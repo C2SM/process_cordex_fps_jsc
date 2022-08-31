@@ -53,8 +53,8 @@ INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
-VARIABLES = ['pr']
-TIME_RES = ['1hr']
+VARIABLES = ['pr', 'tas']
+TIME_RES = ['1hr', '1hr']
 
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['1hr', '3hr', '6hr', 'day']
