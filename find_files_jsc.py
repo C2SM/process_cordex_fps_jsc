@@ -32,9 +32,9 @@ INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output'
 DOMAIN = 'ALP-3'
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
-VARIABLES = ['orog', 'lsm', 'sftls']
+VARIABLES = ['orog', 'sftls']
 
-TIME_RES = ['fx', 'fx', 'fx']
+TIME_RES = ['fx', 'fx']
 
 OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{DOMAIN}'
 
@@ -47,7 +47,11 @@ def find_files(path_pattern, file_pattern, varn, t_freq):
         os.makedirs(outpath_varn)
 
     ff = filefinder.FileFinder(path_pattern, file_pattern)
-    files = ff.find_paths(variable=varn, t_freq=t_freq)
+    try:
+        files = ff.find_paths(variable=varn, t_freq=t_freq)
+    except ValueError:
+        logger.warning('No files found for path %s', path_pattern)
+        return
 
     logger.info('All files found are %s.', files)
     for path, meta in files:
