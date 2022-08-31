@@ -16,7 +16,6 @@ import glob
 from cdo import Cdo
 
 import filefinder
-from filefinder.filters import priority_filter
 
 cdo = Cdo()
 
@@ -37,7 +36,7 @@ VARIABLES = ['orog', 'lsm', 'sftls']
 
 TIME_RES = ['fx', 'fx', 'fx']
 
-OUTPUTH_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{DOMAIN}'
+OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{DOMAIN}'
 
 def find_files(path_pattern, file_pattern, varn, t_freq):
     '''
@@ -58,9 +57,11 @@ def find_files(path_pattern, file_pattern, varn, t_freq):
             # check if file:
             if os.path.isfile(ifile):
                 if ifile.endswith('.nc'):
-                    new_name = f'{varn}_{DOMAIN}_meta{gcm}_meta{scenario}_meta{ensemble}_meta{rcm}_meta{nesting}_{t_freq}.nc'
+                    new_name = (f'{varn}_{DOMAIN}_meta["gcm"]_meta["scenario"]_'
+                                f'meta["ensemble"]_meta["rcm"]_meta["nesting"]_'
+                                f'{t_freq}.nc')
                     os.system(f'mv {ifile} {outpath_varn}/{new_name}')
-                else
+                else:
                     logger.warning('File found is not netcdf but %s', ifile)
             else:
                 logger.warning('Not file but %s found', ifile)
