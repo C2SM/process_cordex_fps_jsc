@@ -79,6 +79,9 @@ def main():
 
         file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}*.nc'
 
+        path_pattern = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/r0i0p0/{rcm}/{nesting}/{t_freq}/{variable}/'
+        find_files(path_pattern, file_pattern, varn, TIME_RES[v_ind])
+
         path_pattern1 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/'
         find_files(path_pattern1, file_pattern, varn, TIME_RES[v_ind])
 
@@ -91,8 +94,6 @@ def main():
         path_pattern4 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/latest/'
         find_files(path_pattern4, file_pattern, varn, TIME_RES[v_ind])
 
-        path_pattern5 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/r0i0p0/'
-        find_files(path_pattern5, file_pattern, varn, TIME_RES[v_ind])
 
 if __name__ == '__main__':
     main()
