@@ -57,8 +57,8 @@ def find_files(path_pattern, file_pattern, varn, t_freq):
             # check if file:
             if os.path.isfile(ifile):
                 if ifile.endswith('.nc'):
-                    new_name = (f'{varn}_{DOMAIN}_meta["gcm"]_meta["scenario"]_'
-                                f'meta["ensemble"]_meta["rcm"]_meta["nesting"]_'
+                    new_name = (f'{varn}_{DOMAIN}_{meta["gcm"]}_{meta["scenario"]}_'
+                                f'{meta["ensemble"]}_{meta["rcm"]}_{meta["nesting"]}_'
                                 f'{t_freq}.nc')
                     os.system(f'mv {ifile} {outpath_varn}/{new_name}')
                 else:
