@@ -37,11 +37,16 @@ VARIABLES = ['orog', 'lsm', 'sftls']
 
 TIME_RES = ['fx', 'fx', 'fx']
 
+OUTPUTH_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{DOMAIN}'
 
 def find_files(path_pattern, file_pattern, varn, t_freq):
     '''
-    Find files to rsync using filefinder class
+    Find files and copy/rename using filefinder class
     '''
+    outpath_varn = f'{OUTPUT_PATH}/{t_freq}/{varn}'
+    if not os.access(outpath_varn, os.F_OK):
+        os.makedirs(outpath_varn)
+
     ff = filefinder.FileFinder(path_pattern, file_pattern)
     files = ff.find_paths(variable=varn, t_freq=t_freq)
 
@@ -52,17 +57,20 @@ def find_files(path_pattern, file_pattern, varn, t_freq):
         for ifile in filelist:
             # check if file:
             if os.path.isfile(ifile):
-                os.system(f'rsync -av {ifile} '
-                          f'daint:/store/c2sm/c2sme/CH202X/CORDEX-FPSCONV/'
-                          f'{DOMAIN}/{t_freq}/{varn}/')
+                if ifile.endswith('.nc'):
+                    new_name = f'{varn}_{DOMAIN}_meta{gcm}_meta{scenario}_meta{ensemble}_meta{rcm}_meta{nesting}_{t_freq}.nc'
+                    os.system(f'mv {ifile} {outpath_varn}/{new_name}')
+                else
+                    logger.warning('File found is not netcdf but %s', ifile)
             else:
                 logger.warning('Not file but %s found', ifile)
 
 def main():
     '''
-    Find files based on different path patterns and rsync to CSCS
+    Find files based on different path patterns and copy/rename to output folder
     '''
     for v_ind, varn in enumerate(VARIABLES):
+
         file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}*.nc'
 
         path_pattern1 = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/ALP-3/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/'
