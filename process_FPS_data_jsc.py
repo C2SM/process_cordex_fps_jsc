@@ -22,6 +22,7 @@ import glob
 import logging
 import os
 import time
+import shutil
 
 from cdo import Cdo
 
@@ -103,9 +104,9 @@ def process_file(meta, ifile, ofile, time_res_in,
             logger.error(errormsg)
         logger.info('File written to %s', ofile)
     elif varnamech:
-        # All we need to do is move/rename the file
-        os.rename(f'{ifile}', f'{ofile}')
-        logger.info('File moved to %s', ofile)
+        # All we need to do is copy/rename the file
+        shutil.copy2(f'{ifile}', f'{ofile}')
+        logger.info('File copied to %s', ofile)
     else:
         # All we need to do is link file
         os.symlink(f'{ifile}', f'{ofile}')
