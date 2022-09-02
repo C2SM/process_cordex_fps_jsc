@@ -185,7 +185,6 @@ def main():
                 filename = (f'{varn}_{DOMAIN}_{metainfo}_'
                             f'{TIME_RES[v_ind]}_{time_range}')
 
-
                 if derived and (
                     TIME_RES[v_ind] == '1hr' and
                     meta['t_freq'] in ['3hr', '6hr', 'day'] or
@@ -202,6 +201,9 @@ def main():
                     derived=False
 
                 ofile = f'{outpath_varn}/{meta["scenario"]}/{filename}.nc'
+                # create output directory if does not exist yet
+                if not os.access(f'{outpath_varn}/{meta["scenario"]}, os.F_OK):
+                    os.makedirs(f'{outpath_varn}/{meta["scenario"]})
 
                 # Check if ofile already exists, create if does not exist
                 # yet or OVERWRITE=True
