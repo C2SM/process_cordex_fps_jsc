@@ -202,8 +202,9 @@ def main():
 
                 ofile = f'{outpath_varn}/{meta["scenario"]}/{filename}.nc'
                 # create output directory if does not exist yet
-                if not os.access(f'{outpath_varn}/{meta["scenario"]}, os.F_OK):
-                    os.makedirs(f'{outpath_varn}/{meta["scenario"]})
+                final_out = f'{outpath_varn}/{meta["scenario"]}'
+                if not os.access(final_out, os.F_OK):
+                    os.makedirs(final_out)
 
                 # Check if ofile already exists, create if does not exist
                 # yet or OVERWRITE=True
