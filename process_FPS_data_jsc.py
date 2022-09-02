@@ -201,7 +201,7 @@ def main():
                                 f'{meta["t_freq"]}_{time_range}')
                     derived=False
 
-                ofile = f'{outpath_varn}/{filename}.nc'
+                ofile = f'{outpath_varn}/{meta["scenario"]}/{filename}.nc'
 
                 # Check if ofile already exists, create if does not exist
                 # yet or OVERWRITE=True
