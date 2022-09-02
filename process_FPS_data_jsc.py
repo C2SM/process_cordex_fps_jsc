@@ -36,7 +36,7 @@ cdo = Cdo()
 # Define logfile and logger
 seconds = time.time()
 local_time = time.localtime(seconds)
-LOG_FILENAME = (f'logfiles/logging_{local_time.tm_year}{local_time.tm_mon}'
+LOG_FILENAME = (f'logfiles/logging_proc_{local_time.tm_year}{local_time.tm_mon}'
                 f'{local_time.tm_mday}{local_time.tm_hour}{local_time.tm_min}'
                 f'{local_time.tm_sec}.out')
 
@@ -49,10 +49,10 @@ logger = logging.getLogger(__name__)
 ####################
 ### Define input ###
 ####################
-DOMAIN = 'ALP-3'
+DOMAIN = 'EUR-11'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
-SCENARIOS = ['historical', 'rcp85', 'evaluation']
+SCENARIOS = ['historical', 'rcp85']
 
 VARIABLES = ['pr', 'tas']
 TIME_RES = ['1hr', '1hr']
@@ -116,7 +116,7 @@ def process_file(meta, ifile, ofile, time_res_in,
 
 def main():
     '''
-    Loop over all files found and cut to smaller domain,
+    Loop over all files found and copy, rename or link file to new folder,
     resample if necessary
     '''
 
@@ -139,7 +139,7 @@ def main():
             os.makedirs(outpath_varn)
 
         path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
-        file_pattern = '{variable}_ALP-3_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc'
+        file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
 
         ff = filefinder.FileFinder(path_pattern, file_pattern)
         files = ff.find_paths(variable=varn)
