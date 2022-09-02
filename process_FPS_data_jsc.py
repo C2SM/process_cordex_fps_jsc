@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 DOMAIN = 'EUR-11'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
-SCENARIOS = ['historical', 'rcp85']
+SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
 VARIABLES = ['pr', 'tas']
 TIME_RES = ['1hr', '1hr']
