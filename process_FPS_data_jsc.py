@@ -109,7 +109,7 @@ def process_file(meta, ifile, ofile, time_res_in,
         logger.info('File copied to %s', ofile)
     else:
         # All we need to do is link file
-        os.symlink(f'{ifile}', f'{ofile}')
+        os.link(f'{ifile}', f'{ofile}')
         logger.info('File linked to %s', ofile)
 
 
