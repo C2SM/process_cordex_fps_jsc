@@ -234,7 +234,6 @@ def calc_to_day(varn, infile, day_file):
                 errormsg = ('Wrong cell_method, should be mean but is '
                             f'{snd.attrs["cell_methods"]}')
                 logger.error(errormsg)
-
         elif varn == 'tasmin':
             # daily minimum
             tasmin = ds_in['tasmin']
@@ -252,6 +251,16 @@ def calc_to_day(varn, infile, day_file):
             else:
                 errormsg = ('Wrong cell_method, should be maximum but is '
                             f'{tasmax.attrs["cell_methods"]}')
+                logger.error(errormsg)
+        elif varn == 'mrro':
+            # runoff should be mean over time
+            # check cell_methods
+            mrro = ds_in['mrro']
+            if mrro.attrs['cell_methods'] == "time: mean":
+                ds_day = ds_in.resample(time='1D').mean()
+            else:
+                errormsg = ('Wrong cell_method, should be mean but is '
+                            f'{mrro.attrs["cell_methods"]}')
                 logger.error(errormsg)
         else:
             errormsg = ('Not implemented! variable needs to be snd, tasmax, or tasmin.')
