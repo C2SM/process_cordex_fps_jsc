@@ -14,7 +14,7 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
     - 1hr: pr, tas
     - 6hr: evspsbl/ hfls, rlds, rlus, rsds, rsus, hurs, prsn,
            psl, hus850, zg500, zg850
-    - day: tasmax, tasmin, snw (snd)
+    - day: tasmax, tasmin, snw (snd), mrro
 
 
 '''
