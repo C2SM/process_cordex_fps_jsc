@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 ####################
 INPUT_PATH = '/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output'
 
-DOMAIN = 'EUR-11'
+DOMAIN = 'ALP-3'
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
 VARIABLES = ['orog', 'sftls']
@@ -77,7 +77,7 @@ def main():
     '''
     for v_ind, varn in enumerate(VARIABLES):
 
-        file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}*.nc' %(DOMAIN)
+        file_pattern = '*{variable}*.nc'
 
         path_pattern1 = '%s/%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH, DOMAIN)
         find_files(path_pattern1, file_pattern, varn, TIME_RES[v_ind])
@@ -85,7 +85,7 @@ def main():
         path_pattern2 = '%s/%s/{institut}/{gcm}/{t_freq}/' %(INPUT_PATH, DOMAIN)
         find_files(path_pattern2, file_pattern, varn, TIME_RES[v_ind])
 
-        path_pattern3 = '%s/%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/' %(INPUT_PATH, DOMAIN)
+        path_pattern3 = '%s/%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/*/' %(INPUT_PATH, DOMAIN)
         find_files(path_pattern3, file_pattern, varn, TIME_RES[v_ind])
 
         path_pattern4 = '%s/%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/latest/' %(INPUT_PATH, DOMAIN)
