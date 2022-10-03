@@ -61,9 +61,13 @@ def find_files(path_pattern, file_pattern, varn, t_freq):
             # check if file:
             if os.path.isfile(ifile):
                 if ifile.endswith('.nc'):
-                    new_name = (f'{varn}_{DOMAIN}_{meta["gcm"]}_{meta["scenario"]}_'
-                                f'{meta["ensemble"]}_{meta["rcm"]}_{meta["nesting"]}_'
-                                f'{t_freq}.nc')
+                    try:
+                        new_name = (f'{varn}_{DOMAIN}_{meta["gcm"]}_{meta["scenario"]}_'
+                                    f'{meta["ensemble"]}_{meta["rcm"]}_{meta["nesting"]}_'
+                                    f'{t_freq}.nc')
+                    except KeyError:
+                        split_ifile = ifile.split('/')
+                        new_name = split_ifile[-1]
                     logger.info('New filename is %s', new_name)
                     os.system(f'cp {ifile} {outpath_varn}/{new_name}')
                 else:
