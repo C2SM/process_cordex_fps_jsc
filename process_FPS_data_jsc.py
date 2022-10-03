@@ -54,8 +54,8 @@ INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
-VARIABLES = ['tasmax', 'tasmin']
-TIME_RES = ['day', 'day']
+VARIABLES = ['snd', 'snw', 'mrro']
+TIME_RES = ['day', 'day', 'day']
 
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['1hr', '3hr', '6hr', 'day']

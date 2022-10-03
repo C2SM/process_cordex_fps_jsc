@@ -225,15 +225,11 @@ def calc_to_day(varn, infile, day_file):
     logger.info('Calculating daily values')
     with xr.open_dataset(infile) as ds_in:
         if varn == 'snd':
-            # snow depth should be mean over time
-            # check cell_methods
             snd = ds_in['snd']
-            if snd.attrs['cell_methods'] == "time: mean":
-                ds_day = ds_in.resample(time='1D').mean()
-            else:
-                errormsg = ('Wrong cell_method, should be mean but is '
-                            f'{snd.attrs["cell_methods"]}')
-                logger.error(errormsg)
+            ds_day = ds_in.resample(time='1D').mean()
+        elif varn == 'snw':
+            snw = ds_in['snw']
+            ds_day = ds_in.resample(time='1D').mean()
         elif varn == 'tasmin':
             # daily minimum
             tasmin = ds_in['tasmin']
@@ -263,7 +259,7 @@ def calc_to_day(varn, infile, day_file):
                             f'{mrro.attrs["cell_methods"]}')
                 logger.error(errormsg)
         else:
-            errormsg = ('Not implemented! variable needs to be snd, tasmax, or tasmin.')
+            errormsg = ('Not implemented! variable needs to be snd, snw, mrro, tasmax, or tasmin.')
             logger.error(errormsg)
 
         # _FillValue for variable should be same as before, all other (coordinate)
