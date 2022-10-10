@@ -233,31 +233,25 @@ def calc_to_day(varn, infile, day_file):
         elif varn == 'tasmin':
             # daily minimum
             tasmin = ds_in['tasmin']
-            if tasmin.attrs['cell_methods'] == "time: minimum":
-                ds_day = ds_in.resample(time='1D').min()
-            else:
-                errormsg = ('Wrong cell_method, should be minimum but is '
-                            f'{tasmin.attrs["cell_methods"]}')
-                logger.error(errormsg)
+            ds_day = ds_in.resample(time='1D').min()
+            if tasmin.attrs['cell_methods'] not "time: minimum":
+                logger.warning('Wrong cell_method, should be minimum but is '
+                               f'{tasmin.attrs["cell_methods"]} in {infile}.')
         elif varn == 'tasmax':
             # daily maximum
             tasmax = ds_in['tasmax']
-            if tasmax.attrs['cell_methods'] == "time: maximum":
-                ds_day = ds_in.resample(time='1D').max()
-            else:
-                errormsg = ('Wrong cell_method, should be maximum but is '
-                            f'{tasmax.attrs["cell_methods"]}')
-                logger.error(errormsg)
+            ds_day = ds_in.resample(time='1D').max()
+            if tasmax.attrs['cell_methods'] not "time: maximum":
+                logger.warning('Wrong cell_method, should be maximum but is '
+                               f'{tasmax.attrs["cell_methods"]} in {infile}'.)
         elif varn == 'mrro':
             # runoff should be mean over time
             # check cell_methods
             mrro = ds_in['mrro']
-            if mrro.attrs['cell_methods'] == "time: mean":
-                ds_day = ds_in.resample(time='1D').mean()
-            else:
-                errormsg = ('Wrong cell_method, should be mean but is '
-                            f'{mrro.attrs["cell_methods"]}')
-                logger.error(errormsg)
+            ds_day = ds_in.resample(time='1D').mean()
+            if mrro.attrs['cell_methods'] not "time: mean":
+                logger.warning('Wrong cell_method, should be mean but is '
+                               f'{mrro.attrs["cell_methods"]} in {file}')
         else:
             errormsg = ('Not implemented! variable needs to be snd, snw, mrro, tasmax, or tasmin.')
             logger.error(errormsg)
