@@ -20,10 +20,9 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
 '''
 import glob
 import logging
-import os
+import os, sys
 import time
 import shutil
-import sys
 
 from cdo import Cdo
 
@@ -86,7 +85,7 @@ def process_file(meta, ifile, ofile, time_res_in,
     '''
     Process input file, change varname if necessary,
     Resample if necessary (derived=True)
-    create simlink if nothing needs to be done
+    create link if nothing needs to be done
     '''
     if derived:
         # Variable needs to be derived for the
@@ -110,8 +109,12 @@ def process_file(meta, ifile, ofile, time_res_in,
         logger.info('File copied to %s', ofile)
     else:
         # All we need to do is link file
-        os.simlink(f'{ifile}', f'{ofile}')
-        logger.info('File linked to %s', ofile)
+        try:
+            os.link(f'{ifile}', f'{ofile}')
+            logger.info('File linked to %s', ofile)
+        except PermissionError:
+            shutil.copy2(f'{ifile}', f'{ofile}')
+            logger.info('File copied to %s', ofile)
 
 
 
