@@ -23,6 +23,7 @@ import logging
 import os
 import time
 import shutil
+import sys
 
 from cdo import Cdo
 
@@ -54,8 +55,8 @@ INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
 
-VARIABLES = ['snd', 'snw', 'mrro']
-TIME_RES = ['day', 'day', 'day']
+VARIABLES = ['tasmax', 'tasmin']
+TIME_RES = ['day', 'day']
 
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['1hr', '3hr', '6hr', 'day']
@@ -223,8 +224,9 @@ def main():
                                      time_res_in=TIME_RES[v_ind],
                                      derived=derived, varnamech=varnamech)
                     except:
+                        logger.error('Unexpected error:', sys.exc_info()[0])
+                        raise
                         logger.error('File %s not written', ofile)
-                        logger.error('Something wrong with input file')
                     continue
 
     logger.info('All files found that could be processed were processed.')
