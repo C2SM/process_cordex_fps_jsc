@@ -234,14 +234,14 @@ def calc_to_day(varn, infile, day_file):
             # daily minimum
             tasmin = ds_in['tasmin']
             ds_day = ds_in.resample(time='1D').min()
-            if tasmin.attrs['cell_methods'] not "time: minimum":
+            if tasmin.attrs['cell_methods'] != "time: minimum":
                 logger.warning('Wrong cell_method, should be minimum but is '
                                f'{tasmin.attrs["cell_methods"]} in {infile}.')
         elif varn == 'tasmax':
             # daily maximum
             tasmax = ds_in['tasmax']
             ds_day = ds_in.resample(time='1D').max()
-            if tasmax.attrs['cell_methods'] not "time: maximum":
+            if tasmax.attrs['cell_methods'] != "time: maximum":
                 logger.warning('Wrong cell_method, should be maximum but is '
                                f'{tasmax.attrs["cell_methods"]} in {infile}'.)
         elif varn == 'mrro':
@@ -249,7 +249,7 @@ def calc_to_day(varn, infile, day_file):
             # check cell_methods
             mrro = ds_in['mrro']
             ds_day = ds_in.resample(time='1D').mean()
-            if mrro.attrs['cell_methods'] not "time: mean":
+            if mrro.attrs['cell_methods'] != "time: mean":
                 logger.warning('Wrong cell_method, should be mean but is '
                                f'{mrro.attrs["cell_methods"]} in {file}')
         else:
