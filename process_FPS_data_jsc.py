@@ -148,7 +148,8 @@ def main():
         file_pattern = '*.nc'
 
         ff = filefinder.FileFinder(path_pattern, file_pattern)
-        files = ff.find_paths(variable=varn)
+        #files = ff.find_paths(variable=varn)
+        files = ff.find_paths()
         files_prioritized = priority_filter(files, "t_freq", TRES_VALID)
 
         for path, meta in files_prioritized:
