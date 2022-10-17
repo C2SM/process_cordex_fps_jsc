@@ -144,7 +144,8 @@ def main():
 
         #path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
         path_pattern = '%s/CLMCom-WEGC/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
-        file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
+        #file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
+        file_pattern = '*.nc'
 
         ff = filefinder.FileFinder(path_pattern, file_pattern)
         files = ff.find_paths(variable=varn)
