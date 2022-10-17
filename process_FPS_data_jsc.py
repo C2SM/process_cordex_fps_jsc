@@ -143,7 +143,7 @@ def main():
             os.makedirs(outpath_varn)
 
         #path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
-        path_pattern = '%s/CLMCom-WEGC/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
+        path_pattern = '%s/CLMCom-WEGC/{gcm}/rcp85/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
         #file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
         file_pattern = '*.nc'
 
@@ -183,6 +183,11 @@ def main():
                     continue
 
                 time_range = find_dates_in_file(ifile)
+
+                try:
+                    scenario_key = meta["scenario"]
+                except KeyError:
+                    meta["scenario"] = SCENARIOS[0]
 
                 metainfo = (f'{meta["gcm"]}_{meta["scenario"]}_'
                             f'{meta["ensemble"]}_{meta["rcm"]}_'
