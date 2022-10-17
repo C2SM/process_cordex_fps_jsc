@@ -52,8 +52,7 @@ logger = logging.getLogger(__name__)
 DOMAIN = 'ALP-3'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
-#SCENARIOS = ['historical', 'rcp85', 'evaluation']
-SCENARIOS = ['rcp85']
+SCENARIOS = ['historical', 'rcp85', 'evaluation']
 VARIABLES = ['tasmax', 'tasmin']
 TIME_RES = ['day', 'day']
 
@@ -142,10 +141,8 @@ def main():
         if not os.access(outpath_varn, os.F_OK):
             os.makedirs(outpath_varn)
 
-        #path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
-        path_pattern = '%s/CLMCom-WEGC/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
-        #file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
-        file_pattern = 't2m_*.nc'
+        path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
+        file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
 
         ff = filefinder.FileFinder(path_pattern, file_pattern)
         files = ff.find_paths(variable=varn)
@@ -183,11 +180,6 @@ def main():
                     continue
 
                 time_range = find_dates_in_file(ifile)
-
-                try:
-                    scenario_key = meta["scenario"]
-                except KeyError:
-                    meta["scenario"] = SCENARIOS[0]
 
                 metainfo = (f'{meta["gcm"]}_{meta["scenario"]}_'
                             f'{meta["ensemble"]}_{meta["rcm"]}_'
