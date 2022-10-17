@@ -143,7 +143,7 @@ def main():
             os.makedirs(outpath_varn)
 
         #path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
-        path_pattern = '%s/CLMCom-WEGC/{gcm}/rcp85/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
+        path_pattern = '%s/CLMCom-WEGC/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
         #file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
         file_pattern = 't2m_*.nc'
 
