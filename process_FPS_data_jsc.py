@@ -145,11 +145,11 @@ def main():
         #path_pattern = '%s/{institut}/{gcm}/{scenario}/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
         path_pattern = '%s/CLMCom-WEGC/{gcm}/rcp85/{ensemble}/{rcm}/{nesting}/{t_freq}/{variable}/' %(INPUT_PATH)
         #file_pattern = '{variable}_%s_{gcm}_{scenario}_{ensemble}_{rcm}_{nesting}_{t_freq}_*.nc' %(DOMAIN)
-        file_pattern = '*.nc'
+        file_pattern = '{variable}_*.nc'
 
         ff = filefinder.FileFinder(path_pattern, file_pattern)
         #files = ff.find_paths(variable=varn)
-        files = ff.find_paths()
+        files = ff.find_paths(variable='t2m')
         files_prioritized = priority_filter(files, "t_freq", TRES_VALID)
 
         for path, meta in files_prioritized:
