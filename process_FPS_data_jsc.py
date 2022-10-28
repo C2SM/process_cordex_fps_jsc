@@ -53,8 +53,8 @@ DOMAIN = 'ALP-3'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
-VARIABLES = ['hurs', 'hus850']
-TIME_RES = ['6hr', '6hr']
+VARIABLES = ['prsn']
+TIME_RES = ['6hr']
 
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['1hr', '3hr', '6hr']
