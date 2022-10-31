@@ -49,15 +49,15 @@ logger = logging.getLogger(__name__)
 ####################
 ### Define input ###
 ####################
-DOMAIN = 'ALP-3'
+DOMAIN = 'EUR-11'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
-VARIABLES = ['prsn']
-TIME_RES = ['6hr']
+VARIABLES = ['tasmax', 'tasmin']
+TIME_RES = ['day', 'day']
 
 # valid time resolutions to look in if the one we want is not available
-TRES_VALID = ['1hr', '3hr', '6hr']
+TRES_VALID = ['day', '1hr', '3hr', '6hr']
 
 OVERWRITE = False # Flag to trigger overwriting of Files
 OUTPUT_PATH = f'/home/rlorenz/fpscpcm/tmp/rlorenz/data/{DOMAIN}'
