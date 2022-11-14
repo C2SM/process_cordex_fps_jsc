@@ -47,14 +47,14 @@ logging.basicConfig(filename=LOG_FILENAME,
 logger = logging.getLogger(__name__)
 
 ####################
-### Define input ###
+# Define input     #
 ####################
 DOMAIN = 'EUR-11'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
-VARIABLES = ['tasmax', 'tasmin']
-TIME_RES = ['day', 'day']
+VARIABLES = ['snw', 'snd', 'snc']
+TIME_RES = ['day', 'day', 'day']
 
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['day', '1hr', '3hr', '6hr']
