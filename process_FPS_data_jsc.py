@@ -14,7 +14,7 @@ Purpose: process high resolution FPS data at jsc to decrease data amount
     - 1hr: pr, tas
     - 6hr: evspsbl/ hfls, rlds, rlus, rsds, rsus, hurs, prsn,
            psl, hus850, zg500, zg850
-    - day: tasmax, tasmin, snw (snd), mrro
+    - day: tasmax, tasmin, snw (snd), mrro, zg500, ta850, SST
 
 
 '''
@@ -53,8 +53,8 @@ DOMAIN = 'EUR-11'
 INPUT_PATH = f'/home/rlorenz/fpscpcm/CORDEX-FPSCONV/output/{DOMAIN}'
 
 SCENARIOS = ['historical', 'rcp85', 'evaluation']
-VARIABLES = ['snw', 'snd', 'snc']
-TIME_RES = ['day', 'day', 'day']
+VARIABLES = ['zg500']
+TIME_RES = ['day']
 
 # valid time resolutions to look in if the one we want is not available
 TRES_VALID = ['day', '1hr', '3hr', '6hr']

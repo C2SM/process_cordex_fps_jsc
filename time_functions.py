@@ -252,8 +252,10 @@ def calc_to_day(varn, infile, day_file):
             if mrro.attrs['cell_methods'] != "time: mean":
                 logger.warning('Wrong cell_method, should be mean but is '
                                f'{mrro.attrs["cell_methods"]} in {file}.')
+        elif (varn == 'zg500' or varn == 'ta850' or varn == 'sst'):
+            ds_day = ds_in.resample(time='1D').mean()
         else:
-            errormsg = ('Not implemented! variable needs to be snd, snw, mrro, tasmax, or tasmin.')
+            errormsg = ('Not implemented! variable needs to be zg500, ta850, sst, snd, snw, mrro, tasmax, or tasmin.')
             logger.error(errormsg)
 
         # _FillValue for variable should be same as before, all other (coordinate)
